@@ -161,7 +161,7 @@ class GridSearch :
                         self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(min(under_sample_thresholds), max(under_sample_thresholds), 0.1))
 
     def search_with_RF(self, data, target, with_threshold=True, b_data = None, b_target = None) :
-        thresholds = gen_thresholds(0, 1.001, 0.01)
+        thresholds = gen_thresholds(0, 1.001, 0.05)
         m = Model('RF', data, target)
         print('Max_depth', 'Max_features', '#_estimators', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for md in self.max_depths :
@@ -194,7 +194,7 @@ class GridSearch :
                             self.predict_blind_data(m, b_data, b_target, with_threshold=False)
 
     def search_with_under_sampling_RF(self, data, target, under_sample_folds, with_threshold=True, b_data = None, b_target = None) :
-        thresholds = gen_thresholds(0, 1.001, 0.01)
+        thresholds = gen_thresholds(0, 1.001, 0.05)
         print('Max_depth', 'Max_features', '#_estimators', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for md in self.max_depths :
             for mf in self.max_features :
@@ -236,8 +236,8 @@ class GridSearch :
                     if b_data is not None :
                         if with_threshold == True :
                             self.predict_under_sampling_blind_data_LT(under_sample_models, b_data, b_target, with_threshold=True, thresholds=under_sample_thresholds)
-                            self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(mean(under_sample_thresholds), mean(under_sample_thresholds), 0.01))
-                            self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(min(under_sample_thresholds), max(under_sample_thresholds), 0.01))
+                            self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(mean(under_sample_thresholds), mean(under_sample_thresholds), 0.05))
+                            self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(min(under_sample_thresholds), max(under_sample_thresholds), 0.05))
                         else :
                             self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=False)
 
