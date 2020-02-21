@@ -232,10 +232,11 @@ class GridSearch :
                             sensitivity_sum = sensitivity_sum + result[1]
                             specificity_sum = specificity_sum + result[2]
                     print(md, mf, ne, accuracy_sum/len(under_sample_folds), sensitivity_sum/len(under_sample_folds), specificity_sum/len(under_sample_folds))
-                    print(mean(under_sample_thresholds), stdev(under_sample_thresholds), under_sample_thresholds)
+                    if with_threshold == True :
+                        print(mean(under_sample_thresholds), stdev(under_sample_thresholds), under_sample_thresholds)
                     if b_data is not None :
                         if with_threshold == True :
-                            self.predict_under_sampling_blind_data_LT(under_sample_models, b_data, b_target, with_threshold=True, thresholds=under_sample_thresholds)
+                            self.predict_under_sampling_blind_data_LT(under_sample_models, b_data, b_target, thresholds=under_sample_thresholds)
                             self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(mean(under_sample_thresholds), mean(under_sample_thresholds), 0.05))
                             self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(min(under_sample_thresholds), max(under_sample_thresholds), 0.05))
                         else :
