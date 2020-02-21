@@ -83,11 +83,13 @@ from sklearn.model_selection import StratifiedShuffleSplit
 #g.search_with_under_sampling_SVM(res.data, res.target, under_sample_folds, b_res.data, b_res.target)
 
 #g = gs.GridSearch()
-#g.init_RF_params(estimator_size=[1000], max_depths=[None], max_features=['auto'])
-#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds)
+#g.init_RF_params(estimator_size=[30], max_depths=[4, 8, 16, None], max_features=['auto', 0.3, 0.4, 0.5, 0.6, 0.7, None])
+#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, with_threshold=True)
+#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, with_threshold=False)
 #g = gs.GridSearch()
-#g.init_RF_params(estimator_size=[100], max_depths=[None], max_features=['auto'])
-#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, b_res.data, b_res.target)
+#g.init_RF_params(estimator_size=[30], max_depths=[4, 8, 16, None], max_features=['auto', 0.3, 0.4, 0.5, 0.6, 0.7, None])
+#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=True)
+#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=False)
 
 #g = gs.GridSearch()
 #g.init_GNB_params(smoothing=[20, 15, 10, 5, 2, 1, 0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10])
