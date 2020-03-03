@@ -20,17 +20,22 @@ class Model :
     k-fold cross validation. It also contains method to predict blind dataset.
     """
     
-    def __init__(self, e_id, X, y, k=5):
+    def __init__(self, e_id, X, y, k=5, do_shuffle=True):
         """Constructor"""
         
         self.estimators = []
         self.train_indices = []
         self.test_indices = []
         self.estimator_id = e_id
-        self.data = shuffle(X, random_state=42)
-        self.target = shuffle(y, random_state=42)
+        if do_shuffle == True :
+            self.data = shuffle(X, random_state=42)
+            self.target = shuffle(y, random_state=42)
+        else :
+            self.data = X
+            self.target = y
         self.n_folds = k
         self.init_estimator_params()
+        self.split_CV_folds()
 
     def init_estimator_params(self) :
         #-----------------------#
@@ -101,6 +106,12 @@ class Model :
         elif self.estimator_id == 'GNB' :
             return estimator.predict_proba
 
+    def split_CV_folds(self) :
+        skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=42)
+        for train_index, test_index in skf.split(self.data, self.target) :
+            self.train_indices.append(train_index)
+            self.test_indices.append(test_index)
+
     def predict(self, estimator, X_test, threshold=None) :
         if threshold==None :
             y_pred = estimator.predict(X_test)
@@ -137,14 +148,10 @@ class Model :
 
     def learn_k_fold(self) :
         self.estimators = []
-        self.train_indices = []
-        self.test_indices = []
         skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=42)
-        for train_index, test_index in skf.split(self.data, self.target) :
-            self.train_indices.append(train_index)
-            self.test_indices.append(test_index)
+        for f in range(self.n_folds) :
             estimator = self.create_estimator()
-            estimator.fit(self.data[train_index], self.target[train_index])
+            estimator.fit(self.data[self.train_indices[f]], self.target[self.train_indices[f]])
             self.estimators.append(copy.deepcopy(estimator))
     
     def predict_k_fold(self, threshold=None) :
