@@ -1,0 +1,89 @@
+.section_menu{
+    width : 100%;
+    background-color : #e6ffcc;
+    border-style : solid;
+    border-width : 2px 0px 2px 0px;
+}
+.section_left{
+    padding : 20px 0px 0px 0px;
+    width : 14%;
+    float : left;
+}
+.section_middle{
+    width : 85%;
+    float : right;
+    padding-top : 10px;
+    /*                 background-color : lightyellow */
+}
+div.side_nav{
+    border-style : solid;
+    border-width : 0px 0px 1px 0px;
+    background-color : #e6ffcc;
+}
+a.side_nav{
+    display : block;
+    padding : 5px;
+    text-decoration : none;
+    color : black;
+}
+a.side_nav:hover{
+    background-color : #dddddd;
+}
+a.active {
+    background-color: #4CAF50;
+    color: white;
+    display : block;
+    padding : 5px;
+    text-decoration : none;
+    padding : 5px;
+    border-style : solid;
+    border-color : #ff4d4d;
+    border-width : 0px 4px 0px 4px;
+}
+table.form{
+    border-collapse : collapse;
+    border-width : 0px;
+    width : 80%;
+    margin-left : 10%;
+    margin-right : 10%;
+}
+table.form tr:nth-child(odd){
+    background-color : #ccd9ff;
+}
+table.form tr:nth-child(even){
+    background-color : #b3c6ff;
+}
+table.view{
+    border-collapse : collapse;
+    border-width : 0px;
+    align : center;
+}
+table.view tr:nth-child(odd){
+    background-color : #ccd9ff;
+}
+table.view tr:nth-child(even){
+    background-color : #b3c6ff;
+}
+th{
+    background-color : #000066;
+    color : #ffffff;
+    padding : 5px;
+}
+input.full, select.full{
+    width : 91%;
+    margin-top : 5px;
+    margin-bottom : 5px;
+    padding-left : 5px;
+}
+input.drug, select.drug{
+    width : 98%;
+    margin-left : 1%;
+    margin-top : 5px;
+    margin-bottom : 5px;
+    padding : 1px 5px 1px 5px;
+}
+@media print{
+    .section_left, .section_menu, button {
+        display : none;
+    }
+}
