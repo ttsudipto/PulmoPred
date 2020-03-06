@@ -11,7 +11,7 @@ np.set_printoptions(threshold=maxsize)
 #path_prefix = 'input/'
 #path_prefix = 'input/independent_blind_split/'
 #path_prefix = 'input/A_NO_split/'
-path_prefix = 'input/common_pft_tct/'
+path_prefix = '../input/common_pft_tct/'
 
 class DataResource :
     """Class representing the data that is used for analysis.

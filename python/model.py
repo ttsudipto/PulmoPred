@@ -34,6 +34,7 @@ class Model :
             self.data = X
             self.target = y
         self.n_folds = k
+        self.optimal_threshold = None
         self.init_estimator_params()
         self.split_CV_folds()
 
