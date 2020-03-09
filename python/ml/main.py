@@ -70,8 +70,8 @@ from sklearn.model_selection import StratifiedShuffleSplit
 #          PFT Common         #
 #-----------------------------#
 
-res = reader.read_data('PFT_O_NO_uncommon.csv', verbose=True)
-b_res = reader.read_data('PFT_O_NO_common.csv', verbose=False)
+#res = reader.read_data('PFT_O_NO_uncommon.csv', verbose=True)
+#b_res = reader.read_data('PFT_O_NO_common.csv', verbose=False)
 
 #under_sample_folds = get_under_sampling_folds(res.target, 1, 6)
 
