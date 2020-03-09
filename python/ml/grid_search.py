@@ -1,7 +1,7 @@
 from sklearn.model_selection import GridSearchCV
-from model import Model
+from .model import Model
 from statistics import mean, stdev
-import  numpy as np
+import numpy as np
 import copy
 
 def gen_thresholds(start, stop, step) :

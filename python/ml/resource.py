@@ -5,13 +5,15 @@ from sys import maxsize
 import csv
 import numpy as np
 import sys
+from ..config import config
 
 np.set_printoptions(threshold=maxsize)
 
-#path_prefix = 'input/'
-#path_prefix = 'input/independent_blind_split/'
-#path_prefix = 'input/A_NO_split/'
-path_prefix = '../input/common_pft_tct/'
+ROOT_PATH = config.get_ROOT_PATH()
+#path_prefix = ROOT_PATH + 'input/'
+#path_prefix = ROOT_PATH + 'input/independent_blind_split/'
+#path_prefix = ROOT_PATH + 'input/A_NO_split/'
+path_prefix = ROOT_PATH + 'input/common_pft_tct/'
 
 class DataResource :
     """Class representing the data that is used for analysis.

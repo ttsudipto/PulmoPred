@@ -1,13 +1,14 @@
 from joblib import dump, load
-from model import Model
-from model import get_under_sampling_folds
-from model_metadata import ModelMetadata
-import reader
+from .model import Model
+from .model import get_under_sampling_folds
+from .model_metadata import ModelMetadata
+from ..config import config
+from . import reader
 import pickle
 import copy
 #import numpy as np
 
-path_prefix = '../output/models/'
+path_prefix = config.get_OUTPUT_PATH() + 'models/'
 filenames = ['f1.joblib', 'f2.joblib', 'f3.joblib', 'f4.joblib', 'f5.joblib']
 
 res = reader.read_data('PFT_O_NO_uncommon.csv', verbose=True)
@@ -27,7 +28,7 @@ def dump_model_to_file(prefix, filenames, model, metadata_filename = None, thres
 
 def load_model_from_file(prefix, filenames, metadata_filename = None, threshold = None) :
     metadata_file = open(prefix + metadata_filename, 'rb')
-    md = pickle.load(metadata_file)
+    md = pickle.load(metadata_file, encoding='latin1')
     model = md.get_model()
     for f in filenames :
         model.estimators.append(load(prefix + f))
@@ -63,15 +64,33 @@ def perform_SVM(data, target) :
         m.learn_k_fold()
         print(str(i)+' -> ', m.predict_k_fold([SVM_thresholds[i]]))
 
-def check_saved_SVM_models() :
-    model_path = 'SVM/'
+def check_saved_models(estimator_id) :
+    if estimator_id == 'SVM' :
+        model_path = 'SVM/'
+    else :
+        raise ValueError('Invalid estimator')
     for i in range(len(under_sample_folds)) :
         m = load_model_from_file((path_prefix + model_path + str(i) + '/'), filenames, 'metadata.pkl')
         print(str(i)+' -> ', m.predict_k_fold([m.optimal_threshold]))
 
+def load_saved_models(estimator_id) :
+    if estimator_id == 'SVM' :
+        model_path = 'SVM/'
+    else :
+        raise ValueError('Invalid estimator')
+    models = []
+    for i in range(6) :
+        models.append(load_model_from_file((path_prefix + model_path + str(i) + '/'), filenames, 'metadata.pkl'))
+    return models
+
 #save_SVM_models(res.data, res.target)
+
 perform_SVM(res.data, res.target)
-check_saved_SVM_models()
+check_saved_models('SVM')
+
+#models = load_saved_models('SVM')
+#for m in models :
+    #print(m.predict_k_fold([m.optimal_threshold]))
 
 #print(np.array_equal(n_model.data, m.data))
 #print(np.array_equal(n_model.target, m.target))

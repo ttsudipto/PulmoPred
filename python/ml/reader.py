@@ -1,4 +1,4 @@
-from resource import DataResource
+from .resource import DataResource
 from sys import maxsize
 import numpy as np
 
