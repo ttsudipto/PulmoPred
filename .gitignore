@@ -131,3 +131,4 @@ dmypy.json
 .directory
 *.kdev4
 .kdev4/
+config.xml
