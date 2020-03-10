@@ -113,6 +113,10 @@ class Model :
             self.train_indices.append(train_index)
             self.test_indices.append(test_index)
 
+    def get_decision_score(self, estimator, X_test) :
+        decision_function = self.get_decision_function(estimator)
+        return decision_function(X_test)
+
     def predict(self, estimator, X_test, threshold=None) :
         if threshold==None :
             y_pred = estimator.predict(X_test)
