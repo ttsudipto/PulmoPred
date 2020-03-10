@@ -88,7 +88,7 @@
                     $params["fev1_post_percent"] = $_POST["fev1_post_percent"];
                     $arg_json = json_encode($_POST);
                     echo $arg_json."foo\n";
-                    $command = "venv/bin/python python/site/driver.py '".$arg_json."' 2>&1";
+                    $command = "venv/bin/python -m python.driver '".$arg_json."' 2>&1";
                     echo "<pre>".$command."</pre>\n";
                     exec($command, $out, $status);
                     echo count($out)."<br/>";
