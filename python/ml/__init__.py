@@ -5,4 +5,4 @@
 #from . import reader
 #from . import resource
 
-__all__ = ['grid_search', 'model', 'model_metadata', 'pickler', 'reader', 'resource']
+__all__ = ['grid_search', 'model', 'model_metadata', 'pickler', 'reader', 'resource', 'density']
