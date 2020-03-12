@@ -151,6 +151,12 @@ class Model :
                         y_pred.append(0)
         return y_pred
 
+    def learn_without_CV(self) :
+        self.estimators = []
+        estimator = self.create_estimator()
+        estimator.fit(self.data, self.target)
+        self.estimators.append(copy.deepcopy(estimator))
+
     def learn_k_fold(self) :
         self.estimators = []
         skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=42)
