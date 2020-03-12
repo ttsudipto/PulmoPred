@@ -11,9 +11,15 @@ import copy
 path_prefix = config.get_OUTPUT_PATH() + 'models/'
 filenames = ['f1.joblib', 'f2.joblib', 'f3.joblib', 'f4.joblib', 'f5.joblib']
 
-res = reader.read_data('PFT_O_NO_uncommon.csv', verbose=True)
-b_res = reader.read_data('PFT_O_NO_common.csv', verbose=False)
-under_sample_folds = get_under_sampling_folds(res.target, 1, 6)
+res = b_res = under_sample_folds = None
+
+def take_input() :
+    global res
+    global b_res
+    global under_sample_folds
+    res = reader.read_data('PFT_O_NO_uncommon.csv', verbose=True)
+    b_res = reader.read_data('PFT_O_NO_common.csv', verbose=False)
+    under_sample_folds = get_under_sampling_folds(res.target, 1, 6)
 
 def dump_model_to_file(prefix, filenames, model, metadata_filename = None, threshold = None) :
     estimators = model.estimators;
@@ -83,14 +89,17 @@ def load_saved_models(estimator_id) :
         models.append(load_model_from_file((path_prefix + model_path + str(i) + '/'), filenames, 'metadata.pkl'))
     return models
 
-#save_SVM_models(res.data, res.target)
+def execute() :
+    take_input()
+    
+    #save_SVM_models(res.data, res.target)
 
-perform_SVM(res.data, res.target)
-check_saved_models('SVM')
+    perform_SVM(res.data, res.target)
+    check_saved_models('SVM')
 
-#models = load_saved_models('SVM')
-#for m in models :
-    #print(m.predict_k_fold([m.optimal_threshold]))
+    #models = load_saved_models('SVM')
+    #for m in models :
+        #print(m.predict_k_fold([m.optimal_threshold]))
 
-#print(np.array_equal(n_model.data, m.data))
-#print(np.array_equal(n_model.target, m.target))
+    #print(np.array_equal(n_model.data, m.data))
+    #print(np.array_equal(n_model.target, m.target))
