@@ -75,12 +75,6 @@
             <?php
                 if(array_key_exists("query", $_POST) && $_POST["query"] == "1")
                 {
-                    echo "<div><ul>";
-                    echo "<li>FEV1 Pre Value = ".$_POST['fev1_pre_value']."</li>";
-                    echo "<li>FEV1 Pre Percent = ".$_POST['fev1_pre_percent']."</li>";
-                    echo "<li>FEV1 Post Value = ".$_POST['fev1_post_value']."</li>";
-                    echo "<li>FEV1 Post Percent =". $_POST['fev1_post_percent']."</li>";
-                    echo "</ul></div>";
                     $params = array();
                     $params["fev1_pre_value"] = $_POST["fev1_pre_value"];
                     $params["fev1_pre_percent"] = $_POST["fev1_pre_percent"];
@@ -91,6 +85,55 @@
                     $command = "venv/bin/python -m python.driver '".$arg_json."' 2>&1";
                     echo "<pre>".$command."</pre>\n";
                     exec($command, $out, $status);
+                    $result = json_decode($out[0]);
+//                     print_r($result);
+            ?>
+            <h3>Result :</h3>
+            <table class = "form" border = "1" id = "rtable">
+                <tr>
+                    <th>Classifiers</th>
+                    <th>Predicted score</th>
+                    <th>Threshold</th>
+                    <th>Predicted class</th>
+                </tr>
+                <tr>
+                    <td><b>Classifier 0</b></td>
+                    <td><?php echo round(floatval($result->score0), 2); ?></td>
+                    <td><?php echo $result->threshold0; ?></td>
+                    <td><?php echo $result->predicted_label0; ?></td>
+                </tr>
+                <tr>
+                    <td><b>Classifier 1</b></td>
+                    <td><?php echo round(floatval($result->score1), 2); ?></td>
+                    <td><?php echo $result->threshold1; ?></td>
+                    <td><?php echo $result->predicted_label1; ?></td>
+                </tr>
+                <tr>
+                    <td><b>Classifier 2</b></td>
+                    <td><?php echo round(floatval($result->score2), 2); ?></td>
+                    <td><?php echo $result->threshold2; ?></td>
+                    <td><?php echo $result->predicted_label2; ?></td>
+                </tr>
+                <tr>
+                    <td><b>Classifier 3</b></td>
+                    <td><?php echo round(floatval($result->score3), 2); ?></td>
+                    <td><?php echo $result->threshold3; ?></td>
+                    <td><?php echo $result->predicted_label3; ?></td>
+                </tr>
+                <tr>
+                    <td><b>Classifier 4</b></td>
+                    <td><?php echo round(floatval($result->score4), 2); ?></td>
+                    <td><?php echo $result->threshold4; ?></td>
+                    <td><?php echo $result->predicted_label4; ?></td>
+                </tr>
+                <tr>
+                    <td><b>Classifier 5</b></td>
+                    <td><?php echo round(floatval($result->score5), 2); ?></td>
+                    <td><?php echo $result->threshold5; ?></td>
+                    <td><?php echo $result->predicted_label5; ?></td>
+                </tr>
+            </table>
+            <?php
                     echo count($out)."<br/>";
                     for($i=0;$i<count($out);++$i)
                         echo $out[$i]."<br/>";
