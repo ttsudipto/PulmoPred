@@ -3,7 +3,9 @@ from . import reader
 from .model import Model
 from .model import get_under_sampling_folds
 from . import grid_search as gs
+from . import density
 from sklearn.model_selection import StratifiedShuffleSplit
+#import matplotlib.pyplot as plt
 #import density
 #import threshold_tuning as tt
 #import feature_selection as fs
@@ -103,6 +105,12 @@ from sklearn.model_selection import StratifiedShuffleSplit
 #g.search_with_GNB(res.data, res.target, b_data=b_res.data, b_target=b_res.target, with_threshold=False)
 #g.search_with_under_sampling_GNB(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=True)
 #g.search_with_under_sampling_GNB(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=False)
+
+#xs, d = density.execute(res.data[under_sample_folds[0]], res.target[under_sample_folds[0]], 2)
+#plt.plot(xs, d)
+#xs, d = density.execute(res.data[under_sample_folds[0]], res.target[under_sample_folds[0]], 3)
+#plt.plot(xs, d)
+#plt.show()
 
 #-----------------------------#
 #          TCT Common         #
