@@ -3,7 +3,11 @@
     <head>
         <title>Add Pulmonary Function Report Details</title>
         <link rel = "stylesheet" type = "text/css" href = "css/main.css" />
-        <script type = "text/javascript" src = "js/pft.js"></script>
+        <script type = "text/javascript" src = "js/plot.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.8/jquery.csv.min.js"></script>
+        <script type = "text/javascript" src = "https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script type = "text/javascript" src = "js/plot.js"></script>
     </head>
     <body>
         <div class = "section_header">
@@ -31,7 +35,6 @@
                         <th colspan = "2">Post</th>
                     </tr>
                     <tr>
-    <!--                     <th></th> -->
                         <th>Value</th>
                         <th>Pred %</th>
                         <th>Value</th>
@@ -81,9 +84,9 @@
                     $params["fev1_post_value"] = $_POST["fev1_post_value"];
                     $params["fev1_post_percent"] = $_POST["fev1_post_percent"];
                     $arg_json = json_encode($_POST);
-                    echo $arg_json."foo\n";
+//                     echo $arg_json;
                     $command = "venv/bin/python -m python.driver '".$arg_json."' 2>&1";
-                    echo "<pre>".$command."</pre>\n";
+//                     echo "<pre>".$command."</pre>\n";
                     exec($command, $out, $status);
                     $result = json_decode($out[0]);
 //                     print_r($result);
@@ -133,6 +136,24 @@
                     <td><?php echo $result->predicted_label5; ?></td>
                 </tr>
             </table>
+            <?php
+                $scores = array($result->score0, $result->score1, $result->score2, $result->score3, $result->score4, $result->score5);
+                $thresholds = array($result->threshold0, $result->threshold1, $result->threshold2, $result->threshold3, $result->threshold4, $result->threshold5);
+            ?>
+            <center>
+            <table border = "1" id = "dtable">
+                <tr>
+                    <td><div id="plt_div0" style="width:400px; height:300px;"><?php echo "<script>get_density('plt_div0',0,".$scores[0].",".$thresholds[0].");</script>"; ?></div></td>
+                    <td><div id="plt_div1" style="width:400px; height:300px;"><?php echo "<script>get_density('plt_div1',1,".$scores[1].",".$thresholds[1].");</script>"; ?></div></td>
+                    <td><div id="plt_div2" style="width:400px; height:300px;"><?php echo "<script>get_density('plt_div2',2,".$scores[2].",".$thresholds[2].");</script>"; ?></div></td>
+                </tr>
+                <tr>
+                    <td><div id="plt_div3" style="width:400px; height:300px;"><?php echo "<script>get_density('plt_div3',3,".$scores[3].",".$thresholds[3].");</script>"; ?></div></td>
+                    <td><div id="plt_div4" style="width:400px; height:300px;"><?php echo "<script>get_density('plt_div4',4,".$scores[4].",".$thresholds[4].");</script>"; ?></div></td>
+                    <td><div id="plt_div5" style="width:400px; height:300px;"><?php echo "<script>get_density('plt_div5',5,".$scores[5].",".$thresholds[5].");</script>"; ?></div></td>
+                </tr>
+            </table>
+            </center>
             <?php
                     echo count($out)."<br/>";
                     for($i=0;$i<count($out);++$i)
