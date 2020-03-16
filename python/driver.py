@@ -2,6 +2,7 @@ import json
 import sys
 from .input_wrapper import Input
 from .ml.pickler import load_saved_models
+from .ml.density import compute_positiveness, compute_negativeness
 #import input_wrapper
 
 def convert_to_float(s) :
@@ -33,9 +34,12 @@ def classify(models, inp_vector) :
         score_sum = score_sum + (model_score_sum / float(m.n_folds))
         #print('Model score : ' + str((model_score_sum / float(m.n_folds))))
         #print('Model threshold : ' + str(m.optimal_threshold))
-        output['score'+str(m_id)] = str((model_score_sum / float(m.n_folds)))
+        score = (model_score_sum / float(m.n_folds))
+        output['score'+str(m_id)] = str(score)
         output['threshold'+str(m_id)] = str(m.optimal_threshold)
-        if (model_score_sum / float(m.n_folds)) > m.optimal_threshold :
+        output['positiveness'+str(m_id)] = str(compute_positiveness(m_id, score)*100)
+        output['negativeness'+str(m_id)] = str(compute_negativeness(m_id, score)*100)
+        if score > m.optimal_threshold :
             output['predicted_label'+str(m_id)] = 1
         else :
             output['predicted_label'+str(m_id)] = 0
