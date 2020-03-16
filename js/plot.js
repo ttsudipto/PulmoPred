@@ -65,6 +65,8 @@ function plot_one(div_id, pos_x, pos_y, neg_x, neg_y, score, threshold)
                 }
             }
         ],
+        plot_bgcolor: '#ffe6cc',//'#e6e6e6',
+        paper_bgcolor: '#ffe6cc',//'#e6e6e6',
         margin: {t:0}
     };
 
