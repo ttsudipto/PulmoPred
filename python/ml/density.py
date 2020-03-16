@@ -2,8 +2,11 @@ from sklearn.svm import SVC
 from scipy.stats import gaussian_kde
 import collections
 import numpy as np
+from scipy.integrate import simps
 from .model import Model
+from ..config import config
 
+ROOT_PATH = config.get_ROOT_PATH()
 min = 0
 max = 0
 
@@ -41,6 +44,46 @@ def split_pos_neg(target, pos_class=1, neg_class=0) :
             raise ValueError('Invalid value present')
     
     return pos_indices, neg_indices
+
+def load_density(model_index, pos_or_neg) :
+    filename = ROOT_PATH+'output/densities/'+str(model_index)+'.csv'
+    csvfile = open(filename)
+    if pos_or_neg == 'pos' :
+        cols = [0,1]
+    elif pos_or_neg == 'neg' :
+        cols = [2,3]
+    else :
+        raise ValueError('Invalid value in \'pos_or_neg\'')
+    density_function = np.genfromtxt(csvfile, delimiter=',', skip_header=1, usecols=cols)
+    return density_function
+
+def compute_positiveness(model_index, score) :
+    pos_func = load_density(model_index, 'pos')
+    if score < pos_func[0,0] :
+        return 0.0
+    if score > pos_func[pos_func.shape[0]-1,0] :
+        return 1.0
+    masked_data = np.ma.masked_where((pos_func[:,0] > score), pos_func[:,0])
+    score_index = np.argmax(masked_data)
+    #print(masked_data)
+    #print(score_index)
+    #print(pos_func[:score_index+1,0])
+    #print(pos_func[:score_index+1,1])
+    return simps(pos_func[:score_index+1,1], pos_func[:score_index+1,0])
+
+def compute_negativeness(model_index, score) :
+    neg_func = load_density(model_index, 'neg')
+    if score > neg_func[neg_func.shape[0]-1,0] :
+        return 0.0
+    if score < neg_func[0,0] :
+        return 1.0
+    masked_data = np.ma.masked_where((neg_func[:,0] < score), neg_func[:,0])
+    score_index = np.argmin(masked_data)
+    #print(masked_data)
+    #print(score_index)
+    #print(neg_func[score_index:,0])
+    #print(neg_func[score_index:,1])
+    return simps(neg_func[score_index:,1], neg_func[score_index:,0])
 
 def execute(data, target, ch) :
     """Driver function"""
