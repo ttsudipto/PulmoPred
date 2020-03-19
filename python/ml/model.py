@@ -108,10 +108,14 @@ class Model :
             return estimator.predict_proba
 
     def split_CV_folds(self) :
-        skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=42)
-        for train_index, test_index in skf.split(self.data, self.target) :
-            self.train_indices.append(train_index)
-            self.test_indices.append(test_index)
+        if self.n_folds == 1 :
+            self.train_indices = [range(self.data.shape[0])]
+            self.test_indices = [range(self.data.shape[0])]
+        else :
+            skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=42)
+            for train_index, test_index in skf.split(self.data, self.target) :
+                self.train_indices.append(train_index)
+                self.test_indices.append(test_index)
 
     def get_decision_score(self, estimator, X_test) :
         decision_function = self.get_decision_function(estimator)
@@ -152,6 +156,9 @@ class Model :
         return y_pred
 
     def learn_without_CV(self) :
+        self.n_folds = 1
+        self.train_indices = [range(self.data.shape[0])]
+        self.test_indices = [range(self.data.shape[0])]
         self.estimators = []
         estimator = self.create_estimator()
         estimator.fit(self.data, self.target)
