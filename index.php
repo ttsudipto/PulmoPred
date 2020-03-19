@@ -88,6 +88,15 @@
                         <td><input type = "number" class = "full" min = "0" name = "fef_post_percent" /></td>
                     </tr>
                 </table>
+                <br/>
+                <table class = "form" border = "0">
+                    <tr>
+                        <th>Classification model</th>
+                        <td><center><input type = "radio" name = "model_id" value = "SVM" checked /><br/>Support Vector Machine (SVM)</center></td>
+                        <td><center><input type = "radio" name = "model_id" value = "RF"/><br/>Random Forest (RF)</center></td>
+                        <td><center><input type = "radio" name = "model_id" value = "GNB"/><br/>Naive Bayes (NB)</center></td>
+                    </tr>
+                </table>
                 <input type = "hidden" id = "query" name = "query" value = "0" />
                 <br/>
                 <center>
@@ -111,89 +120,140 @@
                     $result = json_decode($out[0]);
 //                     print_r($result);
             ?>
-            <h3>Result :</h3>
-            <table class = "form" border = "1" id = "rtable">
-                <tr>
-                    <th>Classifiers</th>
-                    <th>Predicted score</th>
-                    <th>Threshold</th>
-                    <th>Predicted class</th>
-                    <th>Positiveness (%)</th>
-                    <th>Negativeness (%)</th>
-                </tr>
-                <tr>
-                    <td><b>Classifier 0</b></td>
-                    <td><?php echo round(floatval($result->score0), 3); ?></td>
-                    <td><?php echo $result->threshold0; ?></td>
-                    <td><?php echo $result->predicted_label0; ?></td>
-                    <td><?php echo round(floatval($result->positiveness0), 4); ?></td>
-                    <td><?php echo round(floatval($result->negativeness0), 4); ?></td>
-                </tr>
-                <tr>
-                    <td><b>Classifier 1</b></td>
-                    <td><?php echo round(floatval($result->score1), 3); ?></td>
-                    <td><?php echo $result->threshold1; ?></td>
-                    <td><?php echo $result->predicted_label1; ?></td>
-                    <td><?php echo round(floatval($result->positiveness1), 4); ?></td>
-                    <td><?php echo round(floatval($result->negativeness1), 4); ?></td>
-                </tr>
-                <tr>
-                    <td><b>Classifier 2</b></td>
-                    <td><?php echo round(floatval($result->score2), 3); ?></td>
-                    <td><?php echo $result->threshold2; ?></td>
-                    <td><?php echo $result->predicted_label2; ?></td>
-                    <td><?php echo round(floatval($result->positiveness2), 4); ?></td>
-                    <td><?php echo round(floatval($result->negativeness2), 4); ?></td>
-                </tr>
-                <tr>
-                    <td><b>Classifier 3</b></td>
-                    <td><?php echo round(floatval($result->score3), 3); ?></td>
-                    <td><?php echo $result->threshold3; ?></td>
-                    <td><?php echo $result->predicted_label3; ?></td>
-                    <td><?php echo round(floatval($result->positiveness3), 4); ?></td>
-                    <td><?php echo round(floatval($result->negativeness3), 4); ?></td>
-                </tr>
-                <tr>
-                    <td><b>Classifier 4</b></td>
-                    <td><?php echo round(floatval($result->score4), 3); ?></td>
-                    <td><?php echo $result->threshold4; ?></td>
-                    <td><?php echo $result->predicted_label4; ?></td>
-                    <td><?php echo round(floatval($result->positiveness4), 4); ?></td>
-                    <td><?php echo round(floatval($result->negativeness4), 4); ?></td>
-                </tr>
-                <tr>
-                    <td><b>Classifier 5</b></td>
-                    <td><?php echo round(floatval($result->score5), 3); ?></td>
-                    <td><?php echo $result->threshold5; ?></td>
-                    <td><?php echo $result->predicted_label5; ?></td>
-                    <td><?php echo round(floatval($result->positiveness5), 4); ?></td>
-                    <td><?php echo round(floatval($result->negativeness5), 4); ?></td>
-                </tr>
-            </table>
-            <br/><br/>
+                    <h3>Result :</h3>
+                    
             <?php
-                $scores = array($result->score0, $result->score1, $result->score2, $result->score3, $result->score4, $result->score5);
-                $thresholds = array($result->threshold0, $result->threshold1, $result->threshold2, $result->threshold3, $result->threshold4, $result->threshold5);
+                    if ($_POST['model_id'] == "SVM")
+                    {
             ?>
-            <div class="plot_container">
-                <div style="width:49%; float:left;">
-                    <div id="plt_div0" class="plot_div"><?php echo "<script>get_density('plt_div0',0,".$scores[0].",".$thresholds[0].");</script>"; ?></div>
-                    <div class="plot_caption">Classifier 0</div><br/>
-                    <div id="plt_div2" class="plot_div"><?php echo "<script>get_density('plt_div2',2,".$scores[2].",".$thresholds[2].");</script>"; ?></div>
-                    <div class="plot_caption">Classifier 2</div><br/>
-                    <div id="plt_div4" class="plot_div"><?php echo "<script>get_density('plt_div4',4,".$scores[4].",".$thresholds[4].");</script>"; ?></div>
-                    <div class="plot_caption">Classifier 4</div><br/>
-                </div>
-                <div style="width:49%; float:right;">
-                    <div id="plt_div1" class="plot_div"><?php echo "<script>get_density('plt_div1',1,".$scores[1].",".$thresholds[1].");</script>"; ?></div>
-                    <div class="plot_caption">Classifier 1</div><br/>
-                    <div id="plt_div3" class="plot_div"><?php echo "<script>get_density('plt_div3',3,".$scores[3].",".$thresholds[3].");</script>"; ?></div>
-                    <div class="plot_caption">Classifier 3</div><br/>
-                    <div id="plt_div5" class="plot_div"><?php echo "<script>get_density('plt_div5',5,".$scores[5].",".$thresholds[5].");</script>"; ?></div>
-                    <div class="plot_caption">Classifier 5</div><br/>
-                </div>
-            </div>
+                        <table class = "form" border = "1" id = "rtable">
+                            <tr>
+                                <th>Classifiers</th>
+                                <th>Predicted score</th>
+                                <th>Threshold</th>
+                                <th>Predicted class</th>
+                                <th>Positiveness (%)</th>
+                                <th>Negativeness (%)</th>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 0</b></td>
+                                <td><?php echo round(floatval($result->score0), 3); ?></td>
+                                <td><?php echo $result->threshold0; ?></td>
+                                <td><?php echo $result->predicted_label0; ?></td>
+                                <td><?php echo round(floatval($result->positiveness0), 4); ?></td>
+                                <td><?php echo round(floatval($result->negativeness0), 4); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 1</b></td>
+                                <td><?php echo round(floatval($result->score1), 3); ?></td>
+                                <td><?php echo $result->threshold1; ?></td>
+                                <td><?php echo $result->predicted_label1; ?></td>
+                                <td><?php echo round(floatval($result->positiveness1), 4); ?></td>
+                                <td><?php echo round(floatval($result->negativeness1), 4); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 2</b></td>
+                                <td><?php echo round(floatval($result->score2), 3); ?></td>
+                                <td><?php echo $result->threshold2; ?></td>
+                                <td><?php echo $result->predicted_label2; ?></td>
+                                <td><?php echo round(floatval($result->positiveness2), 4); ?></td>
+                                <td><?php echo round(floatval($result->negativeness2), 4); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 3</b></td>
+                                <td><?php echo round(floatval($result->score3), 3); ?></td>
+                                <td><?php echo $result->threshold3; ?></td>
+                                <td><?php echo $result->predicted_label3; ?></td>
+                                <td><?php echo round(floatval($result->positiveness3), 4); ?></td>
+                                <td><?php echo round(floatval($result->negativeness3), 4); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 4</b></td>
+                                <td><?php echo round(floatval($result->score4), 3); ?></td>
+                                <td><?php echo $result->threshold4; ?></td>
+                                <td><?php echo $result->predicted_label4; ?></td>
+                                <td><?php echo round(floatval($result->positiveness4), 4); ?></td>
+                                <td><?php echo round(floatval($result->negativeness4), 4); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 5</b></td>
+                                <td><?php echo round(floatval($result->score5), 3); ?></td>
+                                <td><?php echo $result->threshold5; ?></td>
+                                <td><?php echo $result->predicted_label5; ?></td>
+                                <td><?php echo round(floatval($result->positiveness5), 4); ?></td>
+                                <td><?php echo round(floatval($result->negativeness5), 4); ?></td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <p>Classification model : Support Vector Machine (SVM)</p>
+                        <br/><br/>
             <?php
+                        $scores = array($result->score0, $result->score1, $result->score2, $result->score3, $result->score4, $result->score5);
+                        $thresholds = array($result->threshold0, $result->threshold1, $result->threshold2, $result->threshold3, $result->threshold4, $result->threshold5);
+            ?>
+                        <div class="plot_container">
+                            <div style="width:49%; float:left;">
+                                <div id="plt_div0" class="plot_div"><?php echo "<script>get_density('plt_div0',0,".$scores[0].",".$thresholds[0].");</script>"; ?></div>
+                                <div class="plot_caption">Classifier 0</div><br/>
+                                <div id="plt_div2" class="plot_div"><?php echo "<script>get_density('plt_div2',2,".$scores[2].",".$thresholds[2].");</script>"; ?></div>
+                                <div class="plot_caption">Classifier 2</div><br/>
+                                <div id="plt_div4" class="plot_div"><?php echo "<script>get_density('plt_div4',4,".$scores[4].",".$thresholds[4].");</script>"; ?></div>
+                                <div class="plot_caption">Classifier 4</div><br/>
+                            </div>
+                            <div style="width:49%; float:right;">
+                                <div id="plt_div1" class="plot_div"><?php echo "<script>get_density('plt_div1',1,".$scores[1].",".$thresholds[1].");</script>"; ?></div>
+                                <div class="plot_caption">Classifier 1</div><br/>
+                                <div id="plt_div3" class="plot_div"><?php echo "<script>get_density('plt_div3',3,".$scores[3].",".$thresholds[3].");</script>"; ?></div>
+                                <div class="plot_caption">Classifier 3</div><br/>
+                                <div id="plt_div5" class="plot_div"><?php echo "<script>get_density('plt_div5',5,".$scores[5].",".$thresholds[5].");</script>"; ?></div>
+                                <div class="plot_caption">Classifier 5</div><br/>
+                            </div>
+                        </div>
+            <?php
+                    } elseif ($_POST["model_id"] == "RF") {
+            ?>
+                        <p style = "margin-left:10%;"><b>Classification model :</b> Random Forest (RF)</p>
+                        <table class = "form" border = "1" id = "rtable">
+                            <tr>
+                                <th>Classifiers</th>
+                                <th>Predicted class</th>
+                                <th>Probability</th>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 0</b></td>
+                                <td><?php echo $result->predicted_label0; ?></td>
+                                <td><?php echo round(floatval($result->proba0), 3); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 1</b></td>
+                                <td><?php echo $result->predicted_label1; ?></td>
+                                <td><?php echo round(floatval($result->proba1), 3); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 2</b></td>
+                                <td><?php echo $result->predicted_label2; ?></td>
+                                <td><?php echo round(floatval($result->proba2), 3); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 3</b></td>
+                                <td><?php echo $result->predicted_label3; ?></td>
+                                <td><?php echo round(floatval($result->proba3), 3); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 4</b></td>
+                                <td><?php echo $result->predicted_label4; ?></td>
+                                <td><?php echo round(floatval($result->proba4), 3); ?></td>
+                            </tr>
+                            <tr>
+                                <td><b>Classifier 5</b></td>
+                                <td><?php echo $result->predicted_label5; ?></td>
+                                <td><?php echo round(floatval($result->proba5), 3); ?></td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <br/><br/>
+            <?php
+                    }
                     echo "<br/><div>";
                     echo count($out)."<br/>";
                     for($i=0;$i<count($out);++$i)
