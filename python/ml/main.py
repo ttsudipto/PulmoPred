@@ -4,13 +4,10 @@ from .model import Model
 from .model import get_under_sampling_folds
 from . import grid_search as gs
 from . import density
+from . import roc
 from sklearn.model_selection import StratifiedShuffleSplit
+import copy
 #import matplotlib.pyplot as plt
-#import density
-#import threshold_tuning as tt
-#import feature_selection as fs
-#import performance
-#import neural
 
 #warnings.filterwarnings('ignore')
 
@@ -106,6 +103,21 @@ from sklearn.model_selection import StratifiedShuffleSplit
 #g.search_with_under_sampling_GNB(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=True)
 #g.search_with_under_sampling_GNB(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=False)
 
+#models = []
+#for i in range(len(under_sample_folds)) :
+    #m = Model('SVM', res.data[under_sample_folds[i]], res.target[under_sample_folds[i]])
+    #m.set_estimator_param('C', 5)
+    #m.set_estimator_param('gamma', 0.0001)
+    #m = Model('RF', res.data[under_sample_folds[i]], res.target[under_sample_folds[i]])
+    #m.set_estimator_param('n_estimators', 20)
+    #m.set_estimator_param('max_depth', 4)
+    #m.set_estimator_param('max_features', 0.4)
+    #m = Model('GNB', res.data[under_sample_folds[i]], res.target[under_sample_folds[i]])
+    #m.set_estimator_param('var_smoothing', 0)
+    #m.learn_k_fold()
+    #models.append(copy.deepcopy(m))
+#roc.plot_roc_US(models)
+
 #xs, d = density.execute(res.data[under_sample_folds[0]], res.target[under_sample_folds[0]], 2)
 #plt.plot(xs, d)
 #xs, d = density.execute(res.data[under_sample_folds[0]], res.target[under_sample_folds[0]], 3)
@@ -156,6 +168,18 @@ from sklearn.model_selection import StratifiedShuffleSplit
 #g.search_with_GNB(res.data, res.target, b_data=b_res.data, b_target=b_res.target, with_threshold=False)
 #g.search_with_under_sampling_GNB(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=True)
 #g.search_with_under_sampling_GNB(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=False)
+
+#m = Model('SVM', res.data, res.target)
+#m.set_estimator_param('C', 10)
+#m.set_estimator_param('gamma', 0.0001)
+#m = Model('RF', res.data, res.target)
+#m.set_estimator_param('n_estimators', 30)
+#m.set_estimator_param('max_depth', 8)
+#m.set_estimator_param('max_features', 0.5)
+#m = Model('GNB', res.data, res.target)
+#m.set_estimator_param('var_smoothing', 0.1)
+#roc.plot_roc_model(m, do_fit=True)
+
 
 #shuffle_split = StratifiedShuffleSplit(n_splits = 1, train_size=500, random_state=42)
 #for (data_index, foo) in shuffle_split.split(res.data, res.target) :
