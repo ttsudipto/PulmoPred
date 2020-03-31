@@ -1,0 +1,7 @@
+Model,Accuracy,AccuracyDev,Sensitivity,SensitivityDev,Specificity,SpecificityDev
+PFT SVM blind,0.8541,0.007,0.90,0.010,0.77,0.021
+PFT RF blind,0.8617,0.012,0.90,0.018,0.78,0.008
+PFT NB blind,0.8552,0.008,0.93,0.011,0.71,0.008
+2CT SVM blind,0.5976,0.022,0.58,0.018,0.63,0.044
+2CT RF blind,0.6490,0.019,0.75,0.038,0.46,0.022
+2CT NB blind,0.6514,0.005,0.88,0.008,0.23,0
