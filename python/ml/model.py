@@ -230,9 +230,7 @@ def get_under_sampling_folds(y, sampling_class, n_folds) :
         sampling_class_folds.append(one_fold)
     for i in range(n_folds) :
         sampling_class_folds[i] = sampling_class_folds[i] + other_indices
+    #print(len(sampling_class_indices))
     
-    print(len(sampling_class_indices))
-    print(len(sampling_class_folds[0]))
-    print(len(sampling_class_folds[1]))
     return sampling_class_folds
     
