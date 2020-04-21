@@ -3,6 +3,7 @@ from . import reader
 from .model import get_under_sampling_folds
 from statistics import mean, stdev
 from sklearn.metrics import accuracy_score, recall_score, precision_score, confusion_matrix
+from sklearn.feature_selection import f_classif, f_regression
 
 pft_SVM_params = {
     'C' : 5,
@@ -46,6 +47,24 @@ def take_input(dataset) :
     elif dataset == 'TCT' :
         res = reader.read_data('TCT_O_NO_uncommon.csv', verbose=False)
         b_res = reader.read_data('TCT_O_NO_common.csv', verbose=False)
+
+def perform_ANOVA(blind=False) :
+    if blind == False :
+        fval, pval = f_classif(res.data, res.target)
+    else :
+        fval, pval = f_classif(b_res.data, b_res.target)
+    print('Attribute,f-value,p-value')
+    for i in range(len(pval)) :
+        print(res.attributes[i+3] + ',' + str(fval[i]) + ',' + str(pval[i]))
+
+def perform_f_regresion(blind = False) :
+    if blind == False :
+        fval, pval = f_regression(res.data, res.target)
+    else :
+        fval, pval = f_classif(b_res.data, b_res.target)
+    print('Attribute,f-value,p-value')
+    for i in range(len(pval)) :
+        print(res.attributes[i+3] + ',' + str(fval[i]) + ',' + str(pval[i]))
 
 def perform_pft_model(model_id) :
     accuracies = []
@@ -182,6 +201,10 @@ def execute() :
     perform_pft_model_blind('RF')
     perform_pft_model_blind('GNB')
     
+    perform_ANOVA()
+    perform_ANOVA(blind=True)
+    #perform_f_regresion()
+    
     take_input('TCT')
     
     #perform_tct_model('SVM')
@@ -191,3 +214,7 @@ def execute() :
     perform_tct_model_blind('SVM')
     perform_tct_model_blind('RF')
     perform_tct_model_blind('GNB')
+    
+    perform_ANOVA()
+    perform_ANOVA(blind=True)
+    #perform_f_regresion()
