@@ -24,6 +24,7 @@ class Model :
         """Constructor"""
         
         self.estimators = []
+        self.total_estimator = None
         self.train_indices = []
         self.test_indices = []
         self.estimator_id = e_id
@@ -156,13 +157,9 @@ class Model :
         return y_pred
 
     def learn_without_CV(self) :
-        self.n_folds = 1
-        self.train_indices = [range(self.data.shape[0])]
-        self.test_indices = [range(self.data.shape[0])]
-        self.estimators = []
         estimator = self.create_estimator()
         estimator.fit(self.data, self.target)
-        self.estimators.append(copy.deepcopy(estimator))
+        self.total_estimator = copy.deepcopy(estimator)
 
     def learn_k_fold(self) :
         self.estimators = []
@@ -171,6 +168,10 @@ class Model :
             estimator = self.create_estimator()
             estimator.fit(self.data[self.train_indices[f]], self.target[self.train_indices[f]])
             self.estimators.append(copy.deepcopy(estimator))
+    
+    def learn(self) :
+        self.learn_without_CV()
+        self.learn_k_fold()
     
     def predict_k_fold(self, threshold=None) :
         sensitivities = []
@@ -200,6 +201,14 @@ class Model :
             specificities.append((tn/1.0) / (tn+fp))
         #print((mean(accuracies), mean(sensitivities), mean(specificities)))
         return (mean(accuracies), mean(sensitivities), mean(specificities))
+
+    def predict_blind_without_CV(self, b_data, b_target, threshold=None) :
+        y_pred = self.predict(self.total_estimator, b_data, threshold)
+        sensitivity = recall_score(b_target, y_pred)
+        accuracy = accuracy_score(b_target, y_pred)
+        tn, fp, fn, tp = confusion_matrix(b_target, y_pred).ravel()
+        specificity = (tn/1.0) / (tn+fp)
+        return accuracy, sensitivity, specificity
 
     def write_to_csv(self, filename, thresholds, accuracies, sensitivities, specificities, PPVs) :
         """Method to write the results into a CSV file"""

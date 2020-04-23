@@ -102,7 +102,7 @@ class GridSearch :
                 m.set_estimator_param('C', c)
                 for g in self.gammas :
                     m.set_estimator_param('gamma', g)
-                    m.learn_k_fold()
+                    m.learn()
                     accuracies = []
                     sensitivities = []
                     specificities = []
@@ -135,7 +135,7 @@ class GridSearch :
                         m.set_estimator_param('kernel', k)
                         m.set_estimator_param('C', c)
                         m.set_estimator_param('gamma', g)
-                        m.learn_k_fold()
+                        m.learn()
                         under_sample_models.append(copy.deepcopy(m))
                         accuracies = []
                         sensitivities = []
@@ -170,7 +170,7 @@ class GridSearch :
                 m.set_estimator_param('max_features', mf)
                 for ne in self.estimator_sizes :
                     m.set_estimator_param('n_estimators', ne)
-                    m.learn_k_fold()
+                    m.learn()
                     if with_threshold == True :
                         accuracies = []
                         sensitivities = []
@@ -207,7 +207,7 @@ class GridSearch :
                         m.set_estimator_param('max_depth', md)
                         m.set_estimator_param('max_features', mf)
                         m.set_estimator_param('n_estimators', ne)
-                        m.learn_k_fold()
+                        m.learn()
                         under_sample_models.append(copy.deepcopy(m))
                         if with_threshold == True :
                             accuracies = []
@@ -249,7 +249,7 @@ class GridSearch :
         for vs in self.smoothings :
             m.set_estimator_param('var_smoothing', vs)
             ### Learning
-            m.learn_k_fold()
+            m.learn()
             ### Prediction 
             if with_threshold == True :
                 accuracies = []
@@ -283,7 +283,7 @@ class GridSearch :
             for i in range(len(under_sample_folds)) :
                 m = Model('GNB', data[under_sample_folds[i]], target[under_sample_folds[i]])
                 m.set_estimator_param('var_smoothing', vs)
-                m.learn_k_fold()
+                m.learn()
                 under_sample_models.append(copy.deepcopy(m))
                 if with_threshold == True :
                     accuracies = []

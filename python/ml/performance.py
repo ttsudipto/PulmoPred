@@ -86,7 +86,7 @@ def perform_pft_model(model_id) :
             for p, v in pft_GNB_params.items() :
                 m.set_estimator_param(p, v)
             name = 'PFT NB'
-        m.learn_k_fold()
+        m.learn()
         if model_id == 'SVM' :
             acc, sens, spec = m.predict_k_fold(pft_SVM_thresholds[i])
         else :
@@ -115,7 +115,7 @@ def perform_tct_model(model_id) :
         for p, v in tct_GNB_params.items() :
             m.set_estimator_param(p, v)
         name = '2CT NB'
-    m.learn_k_fold()
+    m.learn()
     for i in range(len(m.estimators)) :
         y_test = m.target[m.test_indices[i]]
         if model_id == 'SVM' :
@@ -148,7 +148,7 @@ def perform_pft_model_blind(model_id) :
             for p, v in pft_GNB_params.items() :
                 m.set_estimator_param(p, v)
             name = 'PFT NB blind'
-        m.learn_k_fold()
+        m.learn()
         if model_id == 'SVM' :
             acc, sens, spec = m.predict_blind_data(b_res.data, b_res.target, pft_SVM_thresholds[i])
         else :
@@ -177,7 +177,7 @@ def perform_tct_model_blind(model_id) :
         for p, v in tct_GNB_params.items() :
             m.set_estimator_param(p, v)
         name = '2CT NB blind'
-    m.learn_k_fold()
+    m.learn()
     for i in range(len(m.estimators)) :
         #y_test = m.target[m.test_indices[i]]
         if model_id == 'SVM' :
@@ -193,28 +193,32 @@ def perform_tct_model_blind(model_id) :
 def execute() :
     take_input('PFT')
     
-    #perform_pft_model('SVM')
-    #perform_pft_model('RF')
-    #perform_pft_model('GNB')
+    perform_pft_model('SVM')
+    perform_pft_model('RF')
+    perform_pft_model('GNB')
     
-    perform_pft_model_blind('SVM')
-    perform_pft_model_blind('RF')
-    perform_pft_model_blind('GNB')
+    #perform_pft_model_blind('SVM')
+    #perform_pft_model_blind('RF')
+    #perform_pft_model_blind('GNB')
     
-    perform_ANOVA()
-    perform_ANOVA(blind=True)
+    #perform_ANOVA()
+    #perform_ANOVA(blind=True)
+    
     #perform_f_regresion()
+    
+    #--------------------------------------#
     
     take_input('TCT')
     
-    #perform_tct_model('SVM')
-    #perform_tct_model('RF')
-    #perform_tct_model('GNB')
+    perform_tct_model('SVM')
+    perform_tct_model('RF')
+    perform_tct_model('GNB')
     
-    perform_tct_model_blind('SVM')
-    perform_tct_model_blind('RF')
-    perform_tct_model_blind('GNB')
+    #perform_tct_model_blind('SVM')
+    #perform_tct_model_blind('RF')
+    #perform_tct_model_blind('GNB')
     
-    perform_ANOVA()
-    perform_ANOVA(blind=True)
+    #perform_ANOVA()
+    #perform_ANOVA(blind=True)
+    
     #perform_f_regresion()

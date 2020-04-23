@@ -92,17 +92,17 @@ def execute(data, target, ch) :
     global max
     
     m = Model('SVM', data, target)
-    #m.set_estimator_param('C', 5)
-    #m.set_estimator_param('gamma', 0.0001)
+    m.set_estimator_param('C', 5)
+    m.set_estimator_param('gamma', 0.0001)
     m.learn_without_CV()
 
     pos_indices, neg_indices = split_pos_neg(target)
     
-    des = m.estimators[0].decision_function(data)
+    des = m.total_estimator.decision_function(data)
     min = des.min()
     max = des.max()
-    neg_des = m.estimators[0].decision_function(data[neg_indices])
-    pos_des = m.estimators[0].decision_function(data[pos_indices])
+    neg_des = m.total_estimator.decision_function(data[neg_indices])
+    pos_des = m.total_estimator.decision_function(data[pos_indices])
     if (ch == 1) :
         xs, densities = print_gausian(des)
         #xs, densities = print_histogram(des)

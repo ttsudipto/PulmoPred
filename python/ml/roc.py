@@ -10,7 +10,7 @@ def plot_roc_model(model, do_fit=False) :
     mean_fpr = np.linspace(0, 1, 100)
 
     if do_fit == True :
-        model.learn_k_fold()
+        model.learn()
     for i in range(len(model.estimators)) :
         X_test = model.data[model.test_indices[i]]
         y_test = model.target[model.test_indices[i]]
