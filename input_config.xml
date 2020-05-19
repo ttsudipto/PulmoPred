@@ -1,0 +1,22 @@
+<config-root>
+    <random_state_blind_split>0</random_state_blind_split>
+    <blind_data_size>0.2</blind_data_size>
+    <labels>
+        <label positive="1" index="0">O</label>
+        <label negative="1" index="1">NO</label>
+    </labels>
+    <column_labels>
+        <pft>
+            <target>2</target>
+            <data_start>3</data_start>
+            <data_end>15</data_end>
+        </pft>
+        <tct>
+            <target>2</target>
+            <data_start>3</data_start> <!--both/PR start-->
+<!--             <data_end>17</data_end> --> <!--PR end-->
+<!--             <data_start>17</data_start> --> <!--Sao2 start-->
+            <data_end>31</data_end> <!--both/Sao2 end-->
+        </tct>
+    </column_labels>
+</config-root>
