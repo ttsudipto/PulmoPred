@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 from scipy import interp
 from .pickler import load_saved_models
+from ..config import ml_config as mlc
 
 def plot_roc_model(model, do_fit=False) :
     tprs = []
@@ -15,11 +16,11 @@ def plot_roc_model(model, do_fit=False) :
         X_test = model.data[model.test_indices[i]]
         y_test = model.target[model.test_indices[i]]
         probas = model.get_decision_score(model.estimators[i], X_test)
-        if model.estimator_id == 'SVM' :
+        if mlc.is_SVM_id(model.estimator_id) :
             fpr, tpr, thresholds = roc_curve(y_test, probas)
-        elif model.estimator_id == 'RF' :
+        elif mlc.is_RandomForest_id(model.estimator_id) :
             fpr, tpr, thresholds = roc_curve(y_test, probas[:, 1])
-        elif model.estimator_id == 'GNB' :
+        elif mlc.is_NaiveBayes_id(model.estimator_id) :
             fpr, tpr, thresholds = roc_curve(y_test, probas[:, 1])
         else :
             raise ValueError('Invalid estimator ID')
@@ -66,13 +67,13 @@ def plot_roc_US(models) :
         aucs.append(m_auc)
         m_std_aucs.append(m_std_auc)
         m_index = m_index + 1
-        #print('\tModel AUC = ' + str(m_auc) + ' (+/- ' + str(m_std_auc) + ')')
+        print('\tModel AUC = ' + str(m_auc) + ' (+/- ' + str(m_std_auc) + ')')
     
     mean_tpr = np.mean(tprs, axis=0)
     mean_tpr[-1] = 1.0
     mean_auc = auc(mean_fpr, mean_tpr)
     std_auc = np.std(aucs)
-    #print('\tMean AUC = ' + str(mean_auc) + ' (+/- ' + str(std_auc) + ')')
+    print('\tMean AUC = ' + str(mean_auc) + ' (+/- ' + str(std_auc) + ')')
     
     #------ Print as CSV ------#
     #heading = ['FPR']
@@ -91,5 +92,5 @@ def plot_roc_US(models) :
     return mean_fpr, mean_tpr, mean_auc, std_auc
 
 def execute(estimator_id) :
-    models = load_saved_models(estimator_id, with_CV=True)
+    models = load_saved_models(estimator_id)
     plot_roc_US(models)

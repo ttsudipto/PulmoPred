@@ -5,6 +5,7 @@ import numpy as np
 from scipy.integrate import simps
 from .model import Model
 from ..config import config
+from ..config import ml_config as mlc
 
 ROOT_PATH = config.get_ROOT_PATH()
 min = 0
@@ -91,9 +92,10 @@ def execute(data, target, ch) :
     global min
     global max
     
-    m = Model('SVM', data, target)
-    m.set_estimator_param('C', 5)
-    m.set_estimator_param('gamma', 0.0001)
+    hyperparameters = mlc.get_optimal_hyperparameters('PFT', mlc.get_SVM_id())
+    m = Model(mlc.get_SVM_id(), data, target)
+    m.set_estimator_param('C', hyperparameters['C'])
+    m.set_estimator_param('gamma', hyperparameters['gamma'])
     m.learn_without_CV()
 
     pos_indices, neg_indices = split_pos_neg(target)
@@ -103,13 +105,13 @@ def execute(data, target, ch) :
     max = des.max()
     neg_des = m.total_estimator.decision_function(data[neg_indices])
     pos_des = m.total_estimator.decision_function(data[pos_indices])
-    if (ch == 1) :
+    if (ch == 1) : ## all density
         xs, densities = print_gausian(des)
         #xs, densities = print_histogram(des)
-    elif (ch == 2) :
+    elif (ch == 2) : ## negative density
         xs, densities = print_gausian(neg_des)
         #xs, densities = print_histogram(neg_des)
-    elif (ch == 3) :
+    elif (ch == 3) : ## positive density
         xs, densities = print_gausian(pos_des)
         #xs, densities = print_histogram(pos_des)
     else :

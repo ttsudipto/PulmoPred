@@ -3,6 +3,7 @@ from .model import Model
 from statistics import mean, stdev
 import numpy as np
 import copy
+from ..config import ml_config as mlc
 
 def gen_thresholds(start, stop, step) :
     t = start
@@ -94,7 +95,7 @@ class GridSearch :
         """Method to perform grid search"""
         
         thresholds = gen_thresholds(-1, 1.001, 0.1)
-        m = Model('SVM', data, target)
+        m = Model(mlc.get_SVM_id(), data, target)
         print('Kernel', 'C', 'Gamma', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for k in self.kernels :
             m.set_estimator_param('kernel', k)
@@ -131,7 +132,7 @@ class GridSearch :
                     under_sample_models = []
                     under_sample_thresholds = []
                     for i in range(len(under_sample_folds)) :
-                        m = Model('SVM', data[under_sample_folds[i]], target[under_sample_folds[i]])
+                        m = Model(mlc.get_SVM_id(), data[under_sample_folds[i]], target[under_sample_folds[i]])
                         m.set_estimator_param('kernel', k)
                         m.set_estimator_param('C', c)
                         m.set_estimator_param('gamma', g)
@@ -162,7 +163,7 @@ class GridSearch :
 
     def search_with_RF(self, data, target, with_threshold=True, b_data = None, b_target = None) :
         thresholds = gen_thresholds(0, 1.001, 0.05)
-        m = Model('RF', data, target)
+        m = Model(mlc.get_RandomForest_id(), data, target)
         print('Max_depth', 'Max_features', '#_estimators', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for md in self.max_depths :
             m.set_estimator_param('max_depth', md)
@@ -203,7 +204,7 @@ class GridSearch :
                     under_sample_models = []
                     under_sample_thresholds = []
                     for i in range(len(under_sample_folds)) :
-                        m = Model('RF', data[under_sample_folds[i]], target[under_sample_folds[i]])
+                        m = Model(mlc.get_RandomForest_id(), data[under_sample_folds[i]], target[under_sample_folds[i]])
                         m.set_estimator_param('max_depth', md)
                         m.set_estimator_param('max_features', mf)
                         m.set_estimator_param('n_estimators', ne)
@@ -244,7 +245,7 @@ class GridSearch :
 
     def search_with_GNB(self, data, target, with_threshold=True, b_data = None, b_target = None) :
         thresholds = gen_thresholds(0, 1.001, 0.01)
-        m = Model('GNB', data, target)
+        m = Model(mlc.get_NaiveBayes_id(), data, target)
         print('Smoothing', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for vs in self.smoothings :
             m.set_estimator_param('var_smoothing', vs)
@@ -281,7 +282,7 @@ class GridSearch :
             under_sample_models = []
             under_sample_thresholds = []
             for i in range(len(under_sample_folds)) :
-                m = Model('GNB', data[under_sample_folds[i]], target[under_sample_folds[i]])
+                m = Model(mlc.get_NaiveBayes_id(), data[under_sample_folds[i]], target[under_sample_folds[i]])
                 m.set_estimator_param('var_smoothing', vs)
                 m.learn()
                 under_sample_models.append(copy.deepcopy(m))

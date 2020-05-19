@@ -119,3 +119,8 @@ def execute(dataset, model) :
             plot_rf_gs_graph(dataset, lower_z=0.75, upper_z=0.83)
         elif dataset =='TCT' :
             plot_rf_gs_graph(dataset, lower_z=0.55, upper_z=0.65)
+            
+execute('PFT', 'SVM')
+execute('PFT', 'RF')
+execute('TCT', 'SVM')
+execute('TCT', 'RF')

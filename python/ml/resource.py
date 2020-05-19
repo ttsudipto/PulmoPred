@@ -6,6 +6,7 @@ import csv
 import numpy as np
 import sys
 from ..config import config
+from ..config import input_config as ic
 
 np.set_printoptions(threshold=maxsize)
 
@@ -28,7 +29,7 @@ class DataResource :
        
         self.filename = name
         self.attributes = self._read_attributes()
-        self.labels = {'O':1, 'NO':0}
+        self.labels = {ic.get_positive_label():1, ic.get_negative_label():0}
         self._null_indices = []
         self._set_dataset_names()
         self._set_column_limits()
@@ -41,15 +42,9 @@ class DataResource :
             self.dataset_name = 'PFT'
 
     def _set_column_limits(self) :
-        self.target_col = 2
-        if self.dataset_name == 'TCT' :
-            self.data_col_start = 3 # TCT start PR
-            #self.data_col_start = 17 # TCT start Sao
-            #self.data_col_end = 17 # TCT end PR
-            self.data_col_end = len(self.attributes) # TCT end Sao
-        else :
-            self.data_col_start = 3 # PFT start
-            self.data_col_end = len(self.attributes) # PFT end
+        self.target_col = ic.get_target_column(self.dataset_name)
+        self.data_col_start = ic.get_data_column_start(self.dataset_name)
+        self.data_col_end = ic.get_data_column_end(self.dataset_name)
     
     def _target_converter(self, x):
         """Method that maps the target labels to integers"""
@@ -98,7 +93,7 @@ class DataResource :
         It uses the split() method of sklearn.model_selection.StratifiedShuffleSplit class.
         """
         
-        skf = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state = 0)
+        skf = StratifiedShuffleSplit(n_splits=1, test_size=ic.get_blind_data_size(), random_state = ic.get_blind_split_random_state())
         for train_index, test_index in skf.split(self.data, self.target) :
             #print(sorted(train_index))
             #print(sorted(test_index))

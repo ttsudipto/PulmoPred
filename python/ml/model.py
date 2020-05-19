@@ -1,3 +1,4 @@
+from ..config import ml_config as mlc
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
@@ -29,8 +30,8 @@ class Model :
         self.test_indices = []
         self.estimator_id = e_id
         if do_shuffle == True :
-            self.data = shuffle(X, random_state=42)
-            self.target = shuffle(y, random_state=42)
+            self.data = shuffle(X, random_state=mlc.get_random_state())
+            self.target = shuffle(y, random_state=mlc.get_random_state())
         else :
             self.data = X
             self.target = y
@@ -78,34 +79,34 @@ class Model :
         self.GNB_params['var_smoothing'] = 1e-9
 
     def set_estimator_param(self, param, value) :
-        if self.estimator_id == 'SVM' :
+        if mlc.is_SVM_id(self.estimator_id) : ## SVM
             self.SVM_params[param] = value
-        elif self.estimator_id == 'RF' :
+        elif mlc.is_RandomForest_id(self.estimator_id) : ## RF
             self.RF_params[param] = value
-        elif self.estimator_id == 'GNB' :
+        elif mlc.is_NaiveBayes_id(self.estimator_id) : ## GNB
             self.GNB_params[param] = value
 
     def create_estimator(self) :
         """Method that instantiates an estimator"""
         
         estimator = None
-        if self.estimator_id == 'SVM' :
+        if mlc.is_SVM_id(self.estimator_id) : ## SVM
             estimator = SVC()
             estimator.set_params(**self.SVM_params)
-        elif self.estimator_id == 'RF' :
+        elif mlc.is_RandomForest_id(self.estimator_id) : ## RF
             estimator = RF()
             estimator.set_params(**self.RF_params)
-        elif self.estimator_id == 'GNB' :
+        elif mlc.is_NaiveBayes_id(self.estimator_id) : ## GNB
             estimator = GNB()
             estimator.set_params(**self.GNB_params)
         return estimator
 
     def get_decision_function(self, estimator) :
-        if self.estimator_id == 'SVM' :
+        if mlc.is_SVM_id(self.estimator_id) : ## SVM
             return estimator.decision_function
-        elif self.estimator_id == 'RF' :
+        elif mlc.is_RandomForest_id(self.estimator_id) : ## RF
             return estimator.predict_proba
-        elif self.estimator_id == 'GNB' :
+        elif mlc.is_NaiveBayes_id(self.estimator_id) : ## GNB
             return estimator.predict_proba
 
     def split_CV_folds(self) :
@@ -113,7 +114,7 @@ class Model :
             self.train_indices = [range(self.data.shape[0])]
             self.test_indices = [range(self.data.shape[0])]
         else :
-            skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=42)
+            skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=mlc.get_random_state())
             for train_index, test_index in skf.split(self.data, self.target) :
                 self.train_indices.append(train_index)
                 self.test_indices.append(test_index)
@@ -130,7 +131,7 @@ class Model :
             #des = estimator.decision_function(X_test)
             decision_function = self.get_decision_function(estimator)
             des = decision_function(X_test)
-            if self.estimator_id == 'SVM' :
+            if mlc.is_SVM_id(self.estimator_id) : ## SVM
                 #print(des)
                 y_pred = []
                 for val in des :
@@ -138,7 +139,7 @@ class Model :
                         y_pred.append(1)
                     else :
                         y_pred.append(0)
-            elif self.estimator_id == 'RF' :
+            elif mlc.is_RandomForest_id(self.estimator_id) : ## RF
                 #print(des)
                 y_pred = []
                 for val in des :
@@ -146,7 +147,7 @@ class Model :
                         y_pred.append(1)
                     else :
                         y_pred.append(0)
-            elif self.estimator_id == 'GNB' :
+            elif mlc.is_NaiveBayes_id(self.estimator_id) : ## GNB
                 #print(des)
                 y_pred = []
                 for val in des :
@@ -163,7 +164,7 @@ class Model :
 
     def learn_k_fold(self) :
         self.estimators = []
-        skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=42)
+        skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=mlc.get_random_state())
         for f in range(self.n_folds) :
             estimator = self.create_estimator()
             estimator.fit(self.data[self.train_indices[f]], self.target[self.train_indices[f]])
@@ -231,7 +232,7 @@ def get_under_sampling_folds(y, sampling_class, n_folds) :
             sampling_class_indices.append(i)
         else :
             other_indices.append(i)
-    kf = KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    kf = KFold(n_splits=n_folds, shuffle=True, random_state=mlc.get_random_state())
     for (foo, test_index) in kf.split(sampling_class_indices) :
         one_fold = []
         for i in test_index :
