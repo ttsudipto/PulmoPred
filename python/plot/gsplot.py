@@ -64,14 +64,18 @@ def plot_svm_gs_graph(dataset, dpi=600) :
     norm = Normalize(vmin=min(z), vmax=max(z))
     cs = cmap(norm(z))
     ax1.bar3d(x, y, np.zeros_like(z), 1, 1, z, color=cs, shade=True)
-    ax1.set_xlabel('C')
-    ax1.set_ylabel('Gamma')
-    ax1.set_zlabel('Accuracy')
+    ax1.set_xlabel('C', labelpad=20)
+    ax1.set_ylabel('Gamma', labelpad=20)
+    ax1.set_zlabel('Accuracy', labelpad=15)
     ax1.set_xticks(xtick)
     ax1.set_xticklabels(xlabel)
     ax1.set_yticks(ytick)
     ax1.set_yticklabels(ylabel)
-    fig.colorbar(plt.cm.ScalarMappable(cmap=cmap, norm=norm))
+    fig.colorbar(plt.cm.ScalarMappable(cmap=cmap, norm=norm)).ax.tick_params(labelsize=20)
+    for item in ([ax1.title, ax1.xaxis.label, ax1.yaxis.label, ax1.zaxis.label] + ax1.get_xticklabels() + ax1.get_yticklabels() + ax1.get_zticklabels()) :
+        item.set_fontsize(20)
+    #for a,b,c in zip(x, y, z) : ## values on each bar
+        #ax1.text(a+0.1,b+0.1,c+0.02,'%2.3f'%c, fontsize=12, horizontalalignment='left', verticalalignment='bottom', bbox=dict(facecolor='white', alpha=0.1))
     plt.show()
 
 def plot_rf_gs_graph(dataset, lower_z=0, upper_z=None, dpi=600) :
