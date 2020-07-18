@@ -121,6 +121,7 @@ def execute(modelId:str, diagnosis:str, checkBlind=False) :
         
         m.learn()
         under_sample_diagnoses = [diagnoses[x] for x in under_sample_folds[i]]
+        #print(under_sample_diagnoses)
         dp = DiagnosisPredictor(m, under_sample_diagnoses, blindDiagnoses)
         #for x in range(len(under_sample_diagnoses)) :
             #print('+', under_sample_diagnoses[x], res.target[under_sample_folds[i]][x])
@@ -131,14 +132,16 @@ def execute(modelId:str, diagnosis:str, checkBlind=False) :
                 acc = dp.predictDiagnosisKFold(diagnosis, pft_SVM_thresholds[i])
             else :
                 acc = dp.predictDiagnosisKFold(diagnosis)
+            #print(str(acc)+'*'+str(dp.countElementsInList(dp.diagnoses, diagnosis))+' = '+str(acc*dp.countElementsInList(dp.diagnoses, diagnosis)))
         else :  ## Blind
             if mlc.is_SVM_id(modelId) :
                 acc = dp.predictDiagnosisBlind(b_res.data, b_res.target, diagnosis, pft_SVM_thresholds[i])
             else :
                 acc = dp.predictDiagnosisBlind(b_res.data, b_res.target, diagnosis)
+            #print(str(acc)+'*'+str(dp.countElementsInList(dp.blindDiagnoses, diagnosis))+' = '+str(acc*dp.countElementsInList(dp.blindDiagnoses, diagnosis)))
         accuracies.append(acc)
     print(accuracies)
-    print(mean(accuracies), stdev(accuracies))
+    print(diagnosis, mean(accuracies), stdev(accuracies))
 
 #print('--------SVM---------')
 #execute('SVM', 'A')
