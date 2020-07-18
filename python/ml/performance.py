@@ -102,6 +102,8 @@ def perform_pft_model(model_id) :
         accuracies.append(acc)
         sensitivities.append(sens)
         specificities.append(spec)
+    #print(sensitivities)
+    #print(specificities)
     print(name, mean(accuracies), stdev(accuracies), mean(sensitivities), stdev(sensitivities), mean(specificities), stdev(specificities))
 
 def perform_tct_model(model_id) :
@@ -164,6 +166,8 @@ def perform_pft_model_blind(model_id) :
         accuracies.append(acc)
         sensitivities.append(sens)
         specificities.append(spec)
+    #print(sensitivities)
+    #print(specificities)
     print(name, mean(accuracies), stdev(accuracies), mean(sensitivities), stdev(sensitivities), mean(specificities), stdev(specificities))
 
 def perform_tct_model_blind(model_id) :
@@ -216,17 +220,19 @@ def execute() :
     
     #--------------------------------------#
     
-    take_input('TCT')
+    #take_input('TCT')
     
-    perform_tct_model(mlc.get_SVM_id())
-    perform_tct_model(mlc.get_RandomForest_id())
-    perform_tct_model(mlc.get_NaiveBayes_id())
+    #perform_tct_model(mlc.get_SVM_id())
+    #perform_tct_model(mlc.get_RandomForest_id())
+    #perform_tct_model(mlc.get_NaiveBayes_id())
     
-    perform_tct_model_blind(mlc.get_SVM_id())
-    perform_tct_model_blind(mlc.get_RandomForest_id())
-    perform_tct_model_blind(mlc.get_NaiveBayes_id())
+    #perform_tct_model_blind(mlc.get_SVM_id())
+    #perform_tct_model_blind(mlc.get_RandomForest_id())
+    #perform_tct_model_blind(mlc.get_NaiveBayes_id())
     
     #perform_ANOVA()
     #perform_ANOVA(blind=True)
     
     #perform_f_regresion()
+
+execute()
