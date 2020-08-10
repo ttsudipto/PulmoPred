@@ -5,6 +5,7 @@ from .model_metadata import ModelMetadata
 from ..config import config
 from ..config import ml_config as mlc
 from . import reader
+from pathlib import Path
 import pickle
 import copy
 #import numpy as np
@@ -12,9 +13,12 @@ import copy
 path_prefix = config.get_OUTPUT_PATH() + 'models/'
 #filenames = ['f1.joblib', 'f2.joblib', 'f3.joblib', 'f4.joblib', 'f5.joblib']
 
+dataset_name = 'PFT'
+
 res = b_res = under_sample_folds = None
-svm_hyperparams = mlc.get_optimal_hyperparameters('PFT', mlc.get_SVM_id())
-rf_hyperparams = mlc.get_optimal_hyperparameters('PFT', mlc.get_RandomForest_id())
+svm_hyperparams = mlc.get_optimal_hyperparameters(dataset_name, mlc.get_SVM_id())
+rf_hyperparams = mlc.get_optimal_hyperparameters(dataset_name, mlc.get_RandomForest_id())
+gnb_hyperparams = mlc.get_optimal_hyperparameters(dataset_name, mlc.get_NaiveBayes_id())
 
 def get_version() :
     import sklearn
@@ -33,6 +37,7 @@ def dump_model_to_file(prefix, model, metadata_filename = None, threshold = None
     estimators = model.estimators;
     for i in range(len(estimators)) : ## store CV estimators
         filename = 'f' + str(i+1) + '.joblib'
+        Path(prefix).mkdir(parents=True, exist_ok=True)
         dump(estimators[i], prefix + filename)
     dump(model.total_estimator, prefix + 'f_total.joblib') ## store total_estimator
     md = ModelMetadata(model, threshold)
@@ -65,6 +70,11 @@ def create_RF_model(data, target, n_estimators, max_depth, max_features) :
     m.set_estimator_param('max_features', max_features)
     return m
 
+def create_GNB_model(data, target, smoothing) :
+    m = Model(mlc.get_NaiveBayes_id(), data, target)
+    m.set_estimator_param('var_smoothing', smoothing)
+    return m
+
 def save_SVM_models(data, target) :
     kernel = svm_hyperparams['kernel']
     C = svm_hyperparams['C']
@@ -83,6 +93,14 @@ def save_RF_models(data, target) :
     model_path = 'RF/'
     for i in range(mlc.get_n_US_folds('PFT')) :
         m = create_RF_model(data[under_sample_folds[i]], target[under_sample_folds[i]], n_estimators, max_depth, max_features)
+        m.learn()
+        dump_model_to_file((path_prefix + get_version() + model_path + str(i) + '/'), m, 'metadata.pkl')
+
+def save_GNB_models(data, target) :
+    smoothing = gnb_hyperparams['smoothing']
+    model_path = 'GNB/'
+    for i in range(mlc.get_n_US_folds('PFT')) :
+        m = create_GNB_model(data[under_sample_folds[i]], target[under_sample_folds[i]], smoothing)
         m.learn()
         dump_model_to_file((path_prefix + get_version() + model_path + str(i) + '/'), m, 'metadata.pkl')
 
@@ -107,11 +125,21 @@ def perform_RF(data, target) :
         print(str(i)+' CV -> ', m.predict_k_fold())
         print(str(i)+' Total -> ', m.predict_blind_without_CV(m.data, m.target))
 
+def perform_GNB(data, target) :
+    smoothing = gnb_hyperparams['smoothing']
+    for i in range(mlc.get_n_US_folds('PFT')) :
+        m = create_GNB_model(data[under_sample_folds[i]], target[under_sample_folds[i]], smoothing)
+        m.learn()
+        print(str(i)+' CV -> ', m.predict_k_fold())
+        print(str(i)+' Total -> ', m.predict_blind_without_CV(m.data, m.target))
+
 def check_saved_models(estimator_id) :
     if mlc.is_SVM_id(estimator_id) :
         model_path = 'SVM/'
     elif mlc.is_RandomForest_id(estimator_id) :
         model_path = 'RF/'
+    elif mlc.is_NaiveBayes_id(estimator_id) :
+        model_path = 'GNB/'
     else :
         raise ValueError('Invalid estimator')
     for i in range(mlc.get_n_US_folds('PFT')) :
@@ -124,6 +152,8 @@ def load_saved_models(estimator_id) :
         model_path = 'SVM/'
     elif mlc.is_RandomForest_id(estimator_id) :
         model_path = 'RF/'
+    elif mlc.is_NaiveBayes_id(estimator_id) :
+        model_path = 'GNB/'
     else :
         raise ValueError('Invalid estimator')
     models = []
@@ -138,10 +168,10 @@ def execute(estimator_id) :
         print(get_version())
         
         #save_SVM_models(res.data, res.target)
-
+    
         perform_SVM(res.data, res.target)
         check_saved_models(estimator_id)
-
+    
         #models = load_saved_models(estimator_id)
         #for m in models :
             #print(m.predict_k_fold(m.optimal_threshold))
@@ -151,10 +181,23 @@ def execute(estimator_id) :
         print(get_version())
         
         #save_RF_models(res.data, res.target)
-
+    
         perform_RF(res.data, res.target)
         check_saved_models(estimator_id)
-
+    
+        #models = load_saved_models(estimator_id)
+        #for m in models :
+            #print(m.predict_k_fold(m.optimal_threshold))
+            #print(m.predict_blind_without_CV(m.data, m.target, m.optimal_threshold))
+    
+    elif mlc.is_NaiveBayes_id(estimator_id) :
+        print(get_version())
+        
+        #save_GNB_models(res.data, res.target)
+    
+        perform_GNB(res.data, res.target)
+        check_saved_models(estimator_id)
+    
         #models = load_saved_models(estimator_id)
         #for m in models :
             #print(m.predict_k_fold(m.optimal_threshold))
