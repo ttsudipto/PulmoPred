@@ -83,7 +83,7 @@ input.drug, select.drug{
     padding : 1px 5px 1px 5px;
 }
 @media print{
-    .section_left, .section_menu, button {
+    .section_left, button.noprint {
         display : none;
     }
 }
