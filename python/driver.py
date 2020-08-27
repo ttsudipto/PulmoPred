@@ -2,8 +2,10 @@ import json
 import sys
 from statistics import mode
 from .input_wrapper import Input
-from .ml.pickler import load_saved_models
+from .output_wrapper import Output, OutputEncoder
+from .ml.pickler import load_saved_models, get_version
 from .ml.density import compute_positiveness, compute_negativeness
+from .config import ml_config as mlc
 #import input_wrapper
 
 def convert_to_float(s) :
@@ -22,62 +24,64 @@ def parse_json(j_string) :
     inp.set_estimator_id(json_dict['model_id'])
     return inp
 
+def get_decision_tree_paths(model, input_vector) :
+    if mlc.is_RandomForest_id(model.estimator_id) :
+        trees = model.total_estimator.estimators_
+        paths = []
+        for t in trees :
+            paths.append(t.decision_path(input_vector).indices.tolist())
+            #print(t.decision_path(input_vector).indices)
+            #print()
+        return paths
+    else :
+        return []
+
 def classify_with_SVM(inp_vector) :
-    models = load_saved_models('SVM', with_CV=False)
-    output = dict()
-    score_sum = 0
-    threshold_sum = 0
+    models = load_saved_models('SVM')
     m_id = 0
+    #score_sum = 0
+    #threshold_sum = 0
+    output = Output('SVM')
     for m in models :
-        threshold_sum = threshold_sum + m.optimal_threshold
-        model_score_sum = 0
-        for i in range(m.n_folds) :
-            y_pred = m.get_decision_score(m.estimators[i], inp_vector)
-            model_score_sum = model_score_sum + y_pred[0]
-        score_sum = score_sum + (model_score_sum / float(m.n_folds))
-        #print('Model score : ' + str((model_score_sum / float(m.n_folds))))
-        #print('Model threshold : ' + str(m.optimal_threshold))
-        score = (model_score_sum / float(m.n_folds))
-        output['score'+str(m_id)] = str(score)
-        output['threshold'+str(m_id)] = str(m.optimal_threshold)
-        output['positiveness'+str(m_id)] = str(compute_positiveness(m_id, score)*100)
-        output['negativeness'+str(m_id)] = str(compute_negativeness(m_id, score)*100)
-        if score > m.optimal_threshold :
-            output['predicted_label'+str(m_id)] = 1
-        else :
-            output['predicted_label'+str(m_id)] = 0
+        score = m.get_decision_score(m.total_estimator, inp_vector)[0]
+        predicted_label = int(m.predict(m.total_estimator, inp_vector, m.optimal_threshold)[0])
+        #score_sum = score_sum + score
+        #threshold_sum = threshold_sum + m.optimal_threshold
+        output.scores.append(str(score))
+        output.thresholds.append(str(m.optimal_threshold))
+        output.positivenesses.append(str(compute_positiveness(m_id, score)*100))
+        output.negativenesses.append(str(compute_negativeness(m_id, score)*100))
+        output.labels.append(str(predicted_label))
         m_id = m_id + 1
-    avg_threshold = threshold_sum / float(len(models))
-    avg_score = score_sum / float(len(models))
-    #print('Mean Score : ' + str(avg_score))
-    #print('Mean Threshold : ' + str(avg_threshold))
-    #if avg_score < avg_threshold :
-        #print('Predicted class : 0')
-    #else :
-        #print('Predicted class : 1')
-    print(json.dumps(output))
+    #avg_score = score_sum / float(len(models))
+    #avg_threshold = threshold_sum / float(len(models))
+    print(json.dumps(output, cls=OutputEncoder))
 
 def classify_with_RF(inp_vector) :
-    models = load_saved_models('RF', with_CV=False)
-    output = dict()
+    models = load_saved_models('RF')
+    output = Output('RF')
+    output.version = get_version()
     m_id = 0
     for m in models :
-        model_proba_sum = [0, 0]
-        prediction_labels = []
-        for i in range(m.n_folds) :
-            y_pred = m.get_decision_score(m.estimators[i], inp_vector)
-            model_proba_sum = [model_proba_sum[0] + y_pred[0][0], model_proba_sum[1] + y_pred[0][1]]
-            prediction_labels.append(int(m.predict(m.estimators[i], inp_vector)[0]))
-            #print(model_proba_sum)
-        proba = [model_proba_sum[0] / float(m.n_folds), model_proba_sum[1] / float(m.n_folds)]
-        #print(proba)
-        output['proba'+str(m_id)] = str(max(proba))
-        output['predicted_label'+str(m_id)] = mode(prediction_labels)
+        probas = m.get_decision_score(m.total_estimator, inp_vector)
+        predicted_label = int(m.predict(m.total_estimator, inp_vector)[0])
+        output.probas.append(str(probas[0][predicted_label]))
+        output.labels.append(str(predicted_label))
+        output.paths.append(get_decision_tree_paths(m, inp_vector))
         m_id = m_id + 1
-    print(json.dumps(output))
+    print(json.dumps(output, cls=OutputEncoder))
 
 def classify_with_GNB(inp_vector) :
-    classify_with_SVM(inp_vector)
+    models = load_saved_models('GNB')
+    output = Output('GNB')
+    m_id = 0
+    for m in models :
+        probas = m.get_decision_score(m.total_estimator, inp_vector)
+        predicted_label = int(m.predict(m.total_estimator, inp_vector)[0])
+        output.probas.append(str(probas[0][predicted_label]))
+        output.labels.append(str(predicted_label))
+        m_id = m_id + 1
+    print(json.dumps(output, cls=OutputEncoder))
 
 inp = parse_json(sys.argv[1])
 #for i in range(inp.param_length) :
