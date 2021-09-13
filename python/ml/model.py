@@ -1,4 +1,5 @@
 from ..config import ml_config as mlc
+from sklearn.preprocessing import StandardScaler, Normalizer
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
@@ -9,6 +10,7 @@ from sklearn.utils import shuffle
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier as RF
 from sklearn.naive_bayes import GaussianNB as GNB
+from sklearn.neural_network import MLPClassifier as MLP
 from statistics import mean
 import numpy as np
 import csv
@@ -21,7 +23,7 @@ class Model :
     k-fold cross validation. It also contains method to predict blind dataset.
     """
     
-    def __init__(self, e_id, X, y, k=5, do_shuffle=True):
+    def __init__(self, e_id, X, y, k=5, scale=False, do_shuffle=True):
         """Constructor"""
         
         self.estimators = []
@@ -37,6 +39,12 @@ class Model :
             self.target = y
         self.n_folds = k
         self.optimal_threshold = None
+        self.scale = scale
+        self.scaler = None
+        if self.scale == True :
+            #self.scaler = StandardScaler().fit(self.data)
+            self.scaler = Normalizer().fit(self.data)
+            self.data = self.scaler.transform(self.data)
         self.init_estimator_params()
         self.split_CV_folds()
 
@@ -77,6 +85,23 @@ class Model :
         
         self.GNB_params = dict()
         self.GNB_params['var_smoothing'] = 1e-9
+        
+        #------------------------#
+        #       MLP params       #
+        #------------------------#
+        
+        self.MLP_params = dict()
+        self.MLP_params['learning_rate'] = 'constant' # constant, adaptive
+        self.MLP_params['solver'] = 'adam'
+        self.MLP_params['random_state'] = 42
+        self.MLP_params['max_iter'] = 10000
+        self.MLP_params['alpha'] = 0.0001
+        #self.MLP_params['batch_size'] = 128
+        #self.MLP_params['early_stopping'] = True
+        #self.MLP_params['activation'] = a # logistic, tanh, relu
+        #self['hidden_layer_sizes'] = hls
+        #self.MLP_params['learning_rate_init'] = lri
+        #self.MLP_params['tol'] = 1e-5
 
     def set_estimator_param(self, param, value) :
         if mlc.is_SVM_id(self.estimator_id) : ## SVM
@@ -85,6 +110,8 @@ class Model :
             self.RF_params[param] = value
         elif mlc.is_NaiveBayes_id(self.estimator_id) : ## GNB
             self.GNB_params[param] = value
+        elif mlc.is_MLP_id(self.estimator_id) : ## MLP
+            self.MLP_params[param] = value
 
     def create_estimator(self) :
         """Method that instantiates an estimator"""
@@ -99,6 +126,9 @@ class Model :
         elif mlc.is_NaiveBayes_id(self.estimator_id) : ## GNB
             estimator = GNB()
             estimator.set_params(**self.GNB_params)
+        if mlc.is_MLP_id(self.estimator_id) : ## MLP
+            estimator = MLP()
+            estimator.set_params(**self.MLP_params)
         return estimator
 
     def get_decision_function(self, estimator) :
@@ -107,6 +137,8 @@ class Model :
         elif mlc.is_RandomForest_id(self.estimator_id) : ## RF
             return estimator.predict_proba
         elif mlc.is_NaiveBayes_id(self.estimator_id) : ## GNB
+            return estimator.predict_proba
+        elif mlc.is_MLP_id(self.estimator_id) : ## MLP
             return estimator.predict_proba
 
     def split_CV_folds(self) :
@@ -155,6 +187,14 @@ class Model :
                         y_pred.append(1)
                     else :
                         y_pred.append(0)
+            elif mlc.is_MLP_id(self.estimator_id) : ## MLP
+                #print(des)
+                y_pred = []
+                for val in des :
+                    if val[1] > threshold :
+                        y_pred.append(1)
+                    else :
+                        y_pred.append(0)
         return y_pred
 
     def learn_without_CV(self) :
@@ -164,7 +204,7 @@ class Model :
 
     def learn_k_fold(self) :
         self.estimators = []
-        skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=mlc.get_random_state())
+        #skf = StratifiedKFold(n_splits=self.n_folds, shuffle=True, random_state=mlc.get_random_state())
         for f in range(self.n_folds) :
             estimator = self.create_estimator()
             estimator.fit(self.data[self.train_indices[f]], self.target[self.train_indices[f]])
@@ -191,6 +231,8 @@ class Model :
     def predict_blind_data(self, b_data, b_target, threshold=None) :
         """Method to perform prediction of blind dataset"""
         
+        if self.scale == True :
+            b_data = self.scaler.transform(b_data)
         accuracies = []
         sensitivities = []
         specificities = []
@@ -204,6 +246,8 @@ class Model :
         return (mean(accuracies), mean(sensitivities), mean(specificities))
 
     def predict_blind_without_CV(self, b_data, b_target, threshold=None) :
+        if self.scale == True :
+            b_data = self.scaler.transform(b_data)
         y_pred = self.predict(self.total_estimator, b_data, threshold)
         sensitivity = recall_score(b_target, y_pred)
         accuracy = accuracy_score(b_target, y_pred)

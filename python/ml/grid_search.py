@@ -1,4 +1,5 @@
 from sklearn.model_selection import GridSearchCV
+from threading import Thread
 from .model import Model
 from statistics import mean, stdev
 import numpy as np
@@ -19,13 +20,13 @@ class GridSearch :
     hyperparameter optimization by searching a grid of hyperparameters.
     """
     
-    def __init__(self) :
-        """Constructor"""
+    #def __init__(self) :
+        #"""Constructor"""
         
-        self.best_C = None
-        self.best_gamma = None
-        self.best_kernel = None
-        self.best_estimator_size = None
+        #self.best_C = None
+        #self.best_gamma = None
+        #self.best_kernel = None
+        #self.best_estimator_size = None
     
     def init_SVM_params(self, C=[1], gamma=[0.01], kernel=['rbf']) :
         self.Cs = C
@@ -39,6 +40,11 @@ class GridSearch :
     
     def init_GNB_params(self, smoothing=[1e-9]) :
         self.smoothings = smoothing
+    
+    def init_MLP_params(self, activations=['relu'], hidden_layer_sizes=[(100,)], learning_rate_inits=[0.001]) :
+        self.activations = activations
+        self.hidden_layer_sizes = hidden_layer_sizes
+        self.learning_rate_inits = learning_rate_inits
         
     #def search(self, model) :
         #estimator = model.create_estimator()
@@ -91,11 +97,11 @@ class GridSearch :
             b_specificity_sum = b_specificity_sum + b_result[2]
         print('blind', 'Learned', b_accuracy_sum/len(models), b_sensitivity_sum/len(models), b_specificity_sum/len(models))
         
-    def search_with_threshold_SVM(self, data, target, b_data = None, b_target = None) :
+    def search_with_threshold_SVM(self, data, target, b_data = None, b_target = None, scale = False) :
         """Method to perform grid search"""
         
         thresholds = gen_thresholds(-1, 1.001, 0.1)
-        m = Model(mlc.get_SVM_id(), data, target)
+        m = Model(mlc.get_SVM_id(), data, target, scale=scale)
         print('Kernel', 'C', 'Gamma', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for k in self.kernels :
             m.set_estimator_param('kernel', k)
@@ -122,7 +128,7 @@ class GridSearch :
                         self.predict_blind_data(m, b_data, b_target, with_threshold=True, thresholds=[thresholds[max_index]])
                         #self.predict_blind_data(m, b_data, b_target, with_threshold=True, thresholds=thresholds)
 
-    def search_with_under_sampling_SVM(self, data, target, under_sample_folds, b_data = None, b_target = None) :
+    def search_with_under_sampling_SVM(self, data, target, under_sample_folds, b_data = None, b_target = None, scale = False) :
         thresholds = gen_thresholds(-1, 1.001, 0.1)
         print('Kernel', 'C', 'Gamma', 'Accuracy', 'Sensitivity', 'Specificity')
         for k in self.kernels :
@@ -132,7 +138,7 @@ class GridSearch :
                     under_sample_models = []
                     under_sample_thresholds = []
                     for i in range(len(under_sample_folds)) :
-                        m = Model(mlc.get_SVM_id(), data[under_sample_folds[i]], target[under_sample_folds[i]])
+                        m = Model(mlc.get_SVM_id(), data[under_sample_folds[i]], target[under_sample_folds[i]], scale=scale)
                         m.set_estimator_param('kernel', k)
                         m.set_estimator_param('C', c)
                         m.set_estimator_param('gamma', g)
@@ -155,15 +161,15 @@ class GridSearch :
                         specificity_sum = specificity_sum + specificities[max_index]
                         under_sample_thresholds.append(thresholds[max_index])
                     print(k, c, g, accuracy_sum/len(under_sample_folds), sensitivity_sum/len(under_sample_folds), specificity_sum/len(under_sample_folds))
-                    print(mean(under_sample_thresholds), stdev(under_sample_thresholds), under_sample_thresholds)
+                    #print(mean(under_sample_thresholds), stdev(under_sample_thresholds), under_sample_thresholds)
                     if b_data is not None :
                         self.predict_under_sampling_blind_data_LT(under_sample_models, b_data, b_target, thresholds=under_sample_thresholds)
                         self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(mean(under_sample_thresholds), mean(under_sample_thresholds), 0.1))
                         self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(min(under_sample_thresholds), max(under_sample_thresholds), 0.1))
 
-    def search_with_RF(self, data, target, with_threshold=True, b_data = None, b_target = None) :
+    def search_with_RF(self, data, target, with_threshold=True, b_data = None, b_target = None, scale = False) :
         thresholds = gen_thresholds(0, 1.001, 0.05)
-        m = Model(mlc.get_RandomForest_id(), data, target)
+        m = Model(mlc.get_RandomForest_id(), data, target, scale=scale)
         print('Max_depth', 'Max_features', '#_estimators', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for md in self.max_depths :
             m.set_estimator_param('max_depth', md)
@@ -194,7 +200,7 @@ class GridSearch :
                         if b_data is not None :
                             self.predict_blind_data(m, b_data, b_target, with_threshold=False)
 
-    def search_with_under_sampling_RF(self, data, target, under_sample_folds, with_threshold=True, b_data = None, b_target = None) :
+    def search_with_under_sampling_RF(self, data, target, under_sample_folds, with_threshold=True, b_data = None, b_target = None, scale = False) :
         thresholds = gen_thresholds(0, 1.001, 0.05)
         print('Max_depth', 'Max_features', '#_estimators', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for md in self.max_depths :
@@ -204,7 +210,7 @@ class GridSearch :
                     under_sample_models = []
                     under_sample_thresholds = []
                     for i in range(len(under_sample_folds)) :
-                        m = Model(mlc.get_RandomForest_id(), data[under_sample_folds[i]], target[under_sample_folds[i]])
+                        m = Model(mlc.get_RandomForest_id(), data[under_sample_folds[i]], target[under_sample_folds[i]], scale=scale)
                         m.set_estimator_param('max_depth', md)
                         m.set_estimator_param('max_features', mf)
                         m.set_estimator_param('n_estimators', ne)
@@ -233,8 +239,8 @@ class GridSearch :
                             sensitivity_sum = sensitivity_sum + result[1]
                             specificity_sum = specificity_sum + result[2]
                     print(md, mf, ne, accuracy_sum/len(under_sample_folds), sensitivity_sum/len(under_sample_folds), specificity_sum/len(under_sample_folds))
-                    if with_threshold == True :
-                        print(mean(under_sample_thresholds), stdev(under_sample_thresholds), under_sample_thresholds)
+                    #if with_threshold == True :
+                        #print(mean(under_sample_thresholds), stdev(under_sample_thresholds), under_sample_thresholds)
                     if b_data is not None :
                         if with_threshold == True :
                             self.predict_under_sampling_blind_data_LT(under_sample_models, b_data, b_target, thresholds=under_sample_thresholds)
@@ -243,9 +249,9 @@ class GridSearch :
                         else :
                             self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=False)
 
-    def search_with_GNB(self, data, target, with_threshold=True, b_data = None, b_target = None) :
+    def search_with_GNB(self, data, target, with_threshold=True, b_data = None, b_target = None, scale = False) :
         thresholds = gen_thresholds(0, 1.001, 0.01)
-        m = Model(mlc.get_NaiveBayes_id(), data, target)
+        m = Model(mlc.get_NaiveBayes_id(), data, target, scale=scale)
         print('Smoothing', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for vs in self.smoothings :
             m.set_estimator_param('var_smoothing', vs)
@@ -274,7 +280,7 @@ class GridSearch :
                 if b_data is not None :
                     self.predict_blind_data(m, b_data, b_target, with_threshold=False)
     
-    def search_with_under_sampling_GNB(self, data, target, under_sample_folds, with_threshold=True, b_data = None, b_target = None) :
+    def search_with_under_sampling_GNB(self, data, target, under_sample_folds, with_threshold=True, b_data = None, b_target = None, scale = False) :
         thresholds = gen_thresholds(0, 1.001, 0.01)
         print('Smoothing', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
         for vs in self.smoothings :
@@ -282,7 +288,7 @@ class GridSearch :
             under_sample_models = []
             under_sample_thresholds = []
             for i in range(len(under_sample_folds)) :
-                m = Model(mlc.get_NaiveBayes_id(), data[under_sample_folds[i]], target[under_sample_folds[i]])
+                m = Model(mlc.get_NaiveBayes_id(), data[under_sample_folds[i]], target[under_sample_folds[i]], scale=scale)
                 m.set_estimator_param('var_smoothing', vs)
                 m.learn()
                 under_sample_models.append(copy.deepcopy(m))
@@ -309,8 +315,8 @@ class GridSearch :
                     sensitivity_sum = sensitivity_sum + result[1]
                     specificity_sum = specificity_sum + result[2]
             print(vs, accuracy_sum/len(under_sample_folds), sensitivity_sum/len(under_sample_folds), specificity_sum/len(under_sample_folds))
-            if with_threshold == True :
-                print(mean(under_sample_thresholds), stdev(under_sample_thresholds), under_sample_thresholds)
+            #if with_threshold == True :
+                #print(mean(under_sample_thresholds), stdev(under_sample_thresholds), under_sample_thresholds)
             if b_data is not None :
                 if with_threshold == True :
                     self.predict_under_sampling_blind_data_LT(under_sample_models, b_data, b_target, thresholds=under_sample_thresholds)
@@ -318,3 +324,94 @@ class GridSearch :
                     self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(min(under_sample_thresholds), max(under_sample_thresholds), 0.01))
                 else :
                     self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=False)
+    
+    def search_with_MLP(self, data, target, with_threshold=True, b_data = None, b_target = None, scale = False) :
+        thresholds = gen_thresholds(0, 1.001, 0.05)
+        m = Model(mlc.get_MLP_id(), data, target, scale=scale)
+        print('Activation', 'Layers', 'Learning_rate', 'Threshold', 'Accuracy', 'Sensitivity', 'Specificity')
+        for a in self.activations :
+            for hls in self.hidden_layer_sizes :
+                for lri in self.learning_rate_inits :
+                    m.set_estimator_param('activation', a)
+                    m.set_estimator_param('hidden_layer_sizes', hls)
+                    m.set_estimator_param('learning_rate_init', lri)
+                    m.learn()
+                    if with_threshold == True :
+                        accuracies = []
+                        sensitivities = []
+                        specificities = []
+                        for t in thresholds :
+                            result = m.predict_k_fold(t)
+                            accuracies.append(result[0])
+                            sensitivities.append(result[1])
+                            specificities.append(result[2])
+                            #print(ne, t, result[0], result[1], result[2])
+                        diff = np.absolute(np.array(sensitivities)-np.array(specificities))
+                        max_index = diff.tolist().index(diff.min())
+                        print(a, hls, lri, round(thresholds[max_index], 5), accuracies[max_index], sensitivities[max_index], specificities[max_index])
+                        if b_data is not None :
+                            self.predict_blind_data(m, b_data, b_target, with_threshold=True, thresholds=[thresholds[max_index]])
+                            #self.predict_blind_data(m, b_data, b_target, with_threshold=True, thresholds=thresholds)
+                    else :
+                        result = m.predict_k_fold()
+                        print(a, hls, lri,  result[0], result[1], result[2])
+                        if b_data is not None :
+                            self.predict_blind_data(m, b_data, b_target, with_threshold=False)
+
+    def search_with_under_sampling_MLP(self, data, target, under_sample_folds, with_threshold=True, b_data = None, b_target = None, scale = False) :
+        thresholds = gen_thresholds(0, 1.001, 0.05)
+        print('Activation', 'Layers', 'Learning_rate', 'Accuracy', 'Sensitivity', 'Specificity')
+        threads = []
+        for a in self.activations :
+            for hls in self.hidden_layer_sizes :
+                for lri in self.learning_rate_inits :
+                    th = Thread(target = self.check_one_MLP_model, args=(a, hls, lri, data, target, under_sample_folds, with_threshold, b_data, b_target, scale))
+                    threads.append(th)
+                    th.start()
+        for th in threads :
+            th.join()
+
+    def check_one_MLP_model(self, a, hls, lri, data, target, under_sample_folds, with_threshold=True, b_data = None, b_target = None, scale = False) :
+        thresholds = gen_thresholds(0, 1.001, 0.05)
+        accuracy_sum = sensitivity_sum = specificity_sum = 0.
+        under_sample_models = []
+        under_sample_thresholds = []
+        for i in range(len(under_sample_folds)) :
+            m = Model(mlc.get_MLP_id(), data[under_sample_folds[i]], target[under_sample_folds[i]], scale=scale)
+            m.set_estimator_param('activation', a)
+            m.set_estimator_param('hidden_layer_sizes', hls)
+            m.set_estimator_param('learning_rate_init', lri)
+            m.learn()
+            under_sample_models.append(copy.deepcopy(m))
+            if with_threshold == True :
+                accuracies = []
+                sensitivities = []
+                specificities = []
+                for t in thresholds :
+                    result = m.predict_k_fold(t)
+                    accuracies.append(result[0])
+                    sensitivities.append(result[1])
+                    specificities.append(result[2])
+                    #print(ne, t, result[0], result[1], result[2])
+                diff = np.absolute(np.array(sensitivities)-np.array(specificities))
+                max_index = diff.tolist().index(diff.min())
+                #print(a, hls, lri, round(thresholds[max_index], 5), accuracies[max_index], sensitivities[max_index], specificities[max_index])
+                accuracy_sum = accuracy_sum + accuracies[max_index]
+                sensitivity_sum = sensitivity_sum + sensitivities[max_index]
+                specificity_sum = specificity_sum + specificities[max_index]
+                under_sample_thresholds.append(thresholds[max_index])
+            else :
+                result = m.predict_k_fold()
+                accuracy_sum = accuracy_sum + result[0]
+                sensitivity_sum = sensitivity_sum + result[1]
+                specificity_sum = specificity_sum + result[2]
+        print(a, hls, lri, accuracy_sum/len(under_sample_folds), sensitivity_sum/len(under_sample_folds), specificity_sum/len(under_sample_folds))
+        if with_threshold == True :
+            print(mean(under_sample_thresholds), stdev(under_sample_thresholds), under_sample_thresholds)
+        if b_data is not None :
+            if with_threshold == True :
+                self.predict_under_sampling_blind_data_LT(under_sample_models, b_data, b_target, thresholds=under_sample_thresholds)
+                self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(mean(under_sample_thresholds), mean(under_sample_thresholds), 0.05))
+                self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=True, thresholds=gen_thresholds(min(under_sample_thresholds), max(under_sample_thresholds), 0.05))
+            else :
+                self.predict_under_sampling_blind_data(under_sample_models, b_data, b_target, with_threshold=False)

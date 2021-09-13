@@ -29,6 +29,12 @@ def get_RandomForest_id() :
 def get_NaiveBayes_id() :
     return get_from_xpath('./estimator_ids/nb', 0)
 
+def get_MLP_id() :
+    return get_from_xpath('./estimator_ids/mlp', 0)
+
+def get_optimal_estimator(dataset) :
+    return get_from_xpath('./optimal_estimator/' + dataset.lower(), 0)
+
 def is_SVM_id(id) :
     return get_from_xpath('./estimator_ids/svm', 0) == id
 
@@ -37,6 +43,9 @@ def is_RandomForest_id(id) :
 
 def is_NaiveBayes_id(id) :
     return get_from_xpath('./estimator_ids/nb', 0) == id
+
+def is_MLP_id(id) :
+    return get_from_xpath('./estimator_ids/mlp', 0) == id
 
 def get_optimal_hyperparameters(dataset, esimator_id) :
     hp = dict()
@@ -66,6 +75,12 @@ def get_optimal_hyperparameters(dataset, esimator_id) :
             hp['max_features'] = float(max_features_str)
     elif is_NaiveBayes_id(esimator_id) :
         hp['smoothing'] = float(get_from_xpath('./optimal_hyperparameters/' + dataset.lower() + '/nb/smoothing', 0))
+    elif is_MLP_id(esimator_id) :
+        hp['activation'] = get_from_xpath('./optimal_hyperparameters/' + dataset.lower() + '/mlp/activation', 0)
+        hp['learning_rate_init'] = float(get_from_xpath('./optimal_hyperparameters/' + dataset.lower() + '/mlp/learning_rate', 0))
+        arch_list = get_from_xpath('./optimal_hyperparameters/' + dataset.lower() + '/mlp/hidden_layer_sizes', 0).split(',')
+        arch_list = [int(x) for x in arch_list]
+        hp['hidden_layer_sizes'] = tuple(arch_list)
     else :
         raise ValueError('Invalid estimator ID')
     return hp
@@ -78,9 +93,11 @@ def check() :
     print('SVM ID : ' + get_SVM_id())
     print('Random Forest ID : ' + get_RandomForest_id())
     print('Naive Bayes ID : ' + get_NaiveBayes_id())
+    print('MLP ID : ' + get_MLP_id())
     print('Optimal hyperparameters (PFT, SVM) : ' + str(get_optimal_hyperparameters('PFT', 'SVM')))
     print('Optimal hyperparameters (PFT, RF) : ' + str(get_optimal_hyperparameters('PFT', 'RF')))
     print('Optimal hyperparameters (PFT, GNB) : ' + str(get_optimal_hyperparameters('PFT', 'GNB')))
+    print('Optimal hyperparameters (PFT, MLP) : ' + str(get_optimal_hyperparameters('PFT', 'MLP')))
     print('Optimal hyperparameters (TCT, SVM) : ' + str(get_optimal_hyperparameters('TCT', 'SVM')))
     print('Optimal hyperparameters (TCT, RF) : ' + str(get_optimal_hyperparameters('TCT', 'RF')))
     print('Optimal hyperparameters (TCT, GNB) : ' + str(get_optimal_hyperparameters('TCT', 'GNB')))
