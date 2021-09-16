@@ -1,4 +1,3 @@
-import warnings
 from . import reader
 from .model import Model
 from .model import get_under_sampling_folds
@@ -9,6 +8,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 import copy
 #import matplotlib.pyplot as plt
 
+#import warnings
 #warnings.filterwarnings('ignore')
 
 #-----------------------#
@@ -76,18 +76,18 @@ under_sample_folds = get_under_sampling_folds(res.target, 1, 6)
 
 #g = gs.GridSearch()
 #g.init_SVM_params(C=[1, 5, 10, 15, 20], gamma=[0.1, 0.01, 0.001, 0.0001, 0.00001], kernel = ['rbf'])
-#g.search_with_under_sampling_SVM(res.data, res.target, under_sample_folds, scale=True)
 #g.search_with_threshold_SVM(res.data, res.target)
+#g.search_with_under_sampling_SVM(res.data, res.target, under_sample_folds)
 #g = gs.GridSearch()
 #g.init_SVM_params(C=[1], gamma=[0.0001], kernel = ['rbf'])
 #g.search_with_under_sampling_SVM(res.data, res.target, under_sample_folds, b_res.data, b_res.target)
 
 #g = gs.GridSearch()
 #g.init_RF_params(estimator_size=[5, 10, 20, 30], max_depths=[4, 8, 16, None], max_features=['auto', 0.3, 0.4, 0.5, 0.6, 0.7, None])
-#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, with_threshold=True)
-#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, with_threshold=False)
 #g.search_with_RF(res.data, res.target, with_threshold=False)
 #g.search_with_RF(res.data, res.target, with_threshold=True)
+#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, with_threshold=False)
+#g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, with_threshold=True)
 #g = gs.GridSearch()
 #g.init_RF_params(estimator_size=[30], max_depths=[4, 8, 16, None], max_features=['auto', 0.3, 0.4, 0.5, 0.6, 0.7, None])
 #g.search_with_under_sampling_RF(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=True)
@@ -97,8 +97,8 @@ under_sample_folds = get_under_sampling_folds(res.target, 1, 6)
 #g.init_GNB_params(smoothing=[16, 8, 4, 2, 1, 0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10])
 #g.search_with_GNB(res.data, res.target, with_threshold=False)
 #g.search_with_GNB(res.data, res.target, with_threshold=True)
-#g.search_with_under_sampling_GNB(res.data, res.target, under_sample_folds, with_threshold=True)
 #g.search_with_under_sampling_GNB(res.data, res.target, under_sample_folds, with_threshold=False)
+#g.search_with_under_sampling_GNB(res.data, res.target, under_sample_folds, with_threshold=True)
 #g = gs.GridSearch()
 #g.init_GNB_params(smoothing=[16, 8, 4, 2, 1, 0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10])
 #g.search_with_GNB(res.data, res.target, b_data=b_res.data, b_target=b_res.target, with_threshold=True)
@@ -112,7 +112,7 @@ under_sample_folds = get_under_sampling_folds(res.target, 1, 6)
                   #learning_rate_inits=[0.01, 0.001, 0.0001, 0.00001]
 #)
 #g.init_MLP_params(activations=['relu'], 
-                  #hidden_layer_sizes=[(10,10), (25,25), (50,50), (75,75), (100,100)], 
+                  #hidden_layer_sizes=[(10,10), (25,25), (50,50), (75,75), (100,100), (150,150), (200,200)], 
                   #learning_rate_inits=[0.01, 0.001, 0.0001, 0.00001]
 #)
 #g.init_MLP_params(activations=['relu'], 
@@ -127,9 +127,10 @@ under_sample_folds = get_under_sampling_folds(res.target, 1, 6)
                   #hidden_layer_sizes=[(25,25,25, 25)], 
                   #learning_rate_inits=[0.01, 0.001, 0.0001, 0.00001]
 #)
-#g.search_with_under_sampling_MLP(res.data, res.target, under_sample_folds, with_threshold=True)
-#g.search_with_under_sampling_MLP(res.data, res.target, under_sample_folds, with_threshold=False)
 #g.search_with_MLP(res.data, res.target, with_threshold=False)
+#g.search_with_MLP(res.data, res.target, with_threshold=True)
+#g.search_with_under_sampling_MLP(res.data, res.target, under_sample_folds, with_threshold=False)
+#g.search_with_under_sampling_MLP(res.data, res.target, under_sample_folds, with_threshold=True)
 #g.search_with_under_sampling_MLP(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=True)
 #g.search_with_under_sampling_MLP(res.data, res.target, under_sample_folds, b_data=b_res.data, b_target=b_res.target, with_threshold=False)
 

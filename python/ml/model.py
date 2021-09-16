@@ -5,6 +5,8 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import precision_score
+from sklearn.metrics import matthews_corrcoef
+from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
 from sklearn.utils import shuffle
 from sklearn.svm import SVC
@@ -126,7 +128,7 @@ class Model :
         elif mlc.is_NaiveBayes_id(self.estimator_id) : ## GNB
             estimator = GNB()
             estimator.set_params(**self.GNB_params)
-        if mlc.is_MLP_id(self.estimator_id) : ## MLP
+        elif mlc.is_MLP_id(self.estimator_id) : ## MLP
             estimator = MLP()
             estimator.set_params(**self.MLP_params)
         return estimator
@@ -218,6 +220,8 @@ class Model :
         sensitivities = []
         specificities = []
         accuracies = []
+        f1_scores = []
+        mccs = []
         for f in range(self.n_folds) :
             y_test = self.target[self.test_indices[f]]
             y_pred = self.predict(self.estimators[f], self.data[self.test_indices[f]], threshold)
@@ -225,8 +229,10 @@ class Model :
             accuracies.append(accuracy_score(y_test, y_pred))
             tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
             specificities.append((tn/1.0) / (tn+fp))
-        #print((mean(accuracies), mean(sensitivities), mean(specificities)))
-        return (mean(accuracies), mean(sensitivities), mean(specificities))
+            f1_scores.append(f1_score(y_test, y_pred))
+            mccs.append(matthews_corrcoef(y_test, y_pred))
+        #print((mean(accuracies), mean(sensitivities), mean(specificities), mean(f1_scores), mean(mccs)))
+        return (mean(accuracies), mean(sensitivities), mean(specificities), mean(f1_scores), mean(mccs))
     
     def predict_blind_data(self, b_data, b_target, threshold=None) :
         """Method to perform prediction of blind dataset"""
@@ -236,14 +242,18 @@ class Model :
         accuracies = []
         sensitivities = []
         specificities = []
+        f1_scores = []
+        mccs = []
         for f in range(self.n_folds) :
             y_pred = self.predict(self.estimators[f], b_data, threshold)
             sensitivities.append(recall_score(b_target, y_pred))
             accuracies.append(accuracy_score(b_target, y_pred))
             tn, fp, fn, tp = confusion_matrix(b_target, y_pred).ravel()
             specificities.append((tn/1.0) / (tn+fp))
-        #print((mean(accuracies), mean(sensitivities), mean(specificities)))
-        return (mean(accuracies), mean(sensitivities), mean(specificities))
+            f1_scores.append(f1_score(b_target, y_pred))
+            mccs.append(matthews_corrcoef(b_target, y_pred))
+        #print((mean(accuracies), mean(sensitivities), mean(specificities), mean(f1_scores), mean(mccs)))
+        return (mean(accuracies), mean(sensitivities), mean(specificities), mean(f1_scores), mean(mccs))
 
     def predict_blind_without_CV(self, b_data, b_target, threshold=None) :
         if self.scale == True :
@@ -253,7 +263,9 @@ class Model :
         accuracy = accuracy_score(b_target, y_pred)
         tn, fp, fn, tp = confusion_matrix(b_target, y_pred).ravel()
         specificity = (tn/1.0) / (tn+fp)
-        return accuracy, sensitivity, specificity
+        f1s = f1_score(b_target, y_pred)
+        mcc = matthews_corrcoef(b_target, y_pred)
+        return accuracy, sensitivity, specificity, f1s, mcc
 
     def write_to_csv(self, filename, thresholds, accuracies, sensitivities, specificities, PPVs) :
         """Method to write the results into a CSV file"""
