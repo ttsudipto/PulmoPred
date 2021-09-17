@@ -3,7 +3,6 @@
     <random_state>42</random_state>
     <n_US_folds>
         <pft>6</pft>
-        <tct>1</tct>
     </n_US_folds>
     <estimator_ids>
         <svm>SVM</svm>
@@ -11,11 +10,33 @@
         <nb>GNB</nb>
         <mlp>MLP</mlp>
     </estimator_ids>
-    <optimal_estimator>
-        <pft>MLP</pft>
-    </optimal_estimator>
+    <optimal_estimator>MLP</optimal_estimator>
+    <optimal_dataset>us</optimal_dataset>
     <optimal_hyperparameters>
-        <pft>
+        <no-us>
+            <svm>
+                <kernel>rbf</kernel>
+                <C>5</C>
+                <gamma>0.0001</gamma>
+                <thresholds>
+                    <threshold>0.1</threshold>
+                </thresholds>
+            </svm>
+            <rf>
+                <n_estimators>30</n_estimators>
+                <max_depth>8</max_depth>
+                <max_features>0.7</max_features>
+            </rf>
+            <nb>
+                <smoothing>0</smoothing>
+            </nb>
+            <mlp>
+                <activation>relu</activation>
+                <hidden_layer_sizes>100,30</hidden_layer_sizes>
+                <learning_rate>0.001</learning_rate>
+            </mlp>
+        </no-us>
+        <us>
             <svm>
                 <kernel>rbf</kernel>
                 <C>5</C>
@@ -39,27 +60,9 @@
             </nb>
             <mlp>
                 <activation>relu</activation>
-                <hidden_layer_sizes>250,50</hidden_layer_sizes>
-                <learning_rate>0.0001</learning_rate>
+                <hidden_layer_sizes>100,100</hidden_layer_sizes>
+                <learning_rate>0.001</learning_rate>
             </mlp>
-        </pft>
-        <tct>
-            <svm>
-                <kernel>rbf</kernel>
-                <C>10</C>
-                <gamma>0.0001</gamma>
-                <thresholds>
-                    <threshold>0.3</threshold>
-                </thresholds>
-            </svm>
-            <rf>
-                <n_estimators>30</n_estimators>
-                <max_depth>8</max_depth>
-                <max_features>0.5</max_features>
-            </rf>
-            <nb>
-                <smoothing>0.1</smoothing>
-            </nb>
-        </tct>
+        </us>
     </optimal_hyperparameters>
 </config-root>

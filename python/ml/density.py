@@ -92,7 +92,7 @@ def execute(data, target, ch) :
     global min
     global max
     
-    hyperparameters = mlc.get_optimal_hyperparameters('PFT', mlc.get_SVM_id())
+    hyperparameters = mlc.get_optimal_hyperparameters('us', mlc.get_SVM_id())
     m = Model(mlc.get_SVM_id(), data, target)
     m.set_estimator_param('C', hyperparameters['C'])
     m.set_estimator_param('gamma', hyperparameters['gamma'])

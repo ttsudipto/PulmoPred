@@ -17,8 +17,8 @@ def get_n_folds() :
 def get_random_state() :
     return int(get_from_xpath('./random_state', 0))
 
-def get_n_US_folds(dataset) :
-    return int(get_from_xpath('./n_US_folds/' + dataset.lower(), 0))
+def get_n_US_folds() :
+    return int(get_from_xpath('./n_US_folds/pft', 0))
 
 def get_SVM_id() :
     return get_from_xpath('./estimator_ids/svm', 0)
@@ -32,8 +32,11 @@ def get_NaiveBayes_id() :
 def get_MLP_id() :
     return get_from_xpath('./estimator_ids/mlp', 0)
 
-def get_optimal_estimator(dataset) :
-    return get_from_xpath('./optimal_estimator/' + dataset.lower(), 0)
+def get_optimal_estimator() :
+    return get_from_xpath('./optimal_estimator', 0)
+
+def get_optimal_dataset() :
+    return get_from_xpath('./optimal_dataset', 0)
 
 def is_SVM_id(id) :
     return get_from_xpath('./estimator_ids/svm', 0) == id
@@ -88,16 +91,20 @@ def get_optimal_hyperparameters(dataset, esimator_id) :
 def check() :
     print('No. of CV folds : ' + str(get_n_folds()))
     print('Random State : ' + str(get_random_state()))
-    print('Under sampling fold size (PFT) : ' + str(get_n_US_folds('PFT')))
-    print('Under sampling fold size (TCT) : ' + str(get_n_US_folds('TCT')))
+    print('Under sampling fold size : ' + str(get_n_US_folds()))
     print('SVM ID : ' + get_SVM_id())
     print('Random Forest ID : ' + get_RandomForest_id())
     print('Naive Bayes ID : ' + get_NaiveBayes_id())
     print('MLP ID : ' + get_MLP_id())
-    print('Optimal hyperparameters (PFT, SVM) : ' + str(get_optimal_hyperparameters('PFT', 'SVM')))
-    print('Optimal hyperparameters (PFT, RF) : ' + str(get_optimal_hyperparameters('PFT', 'RF')))
-    print('Optimal hyperparameters (PFT, GNB) : ' + str(get_optimal_hyperparameters('PFT', 'GNB')))
-    print('Optimal hyperparameters (PFT, MLP) : ' + str(get_optimal_hyperparameters('PFT', 'MLP')))
-    print('Optimal hyperparameters (TCT, SVM) : ' + str(get_optimal_hyperparameters('TCT', 'SVM')))
-    print('Optimal hyperparameters (TCT, RF) : ' + str(get_optimal_hyperparameters('TCT', 'RF')))
-    print('Optimal hyperparameters (TCT, GNB) : ' + str(get_optimal_hyperparameters('TCT', 'GNB')))
+    print('Optimal estimator : ' + get_optimal_estimator())
+    print('Optimal dataset : ' + get_optimal_dataset())
+    print('Optimal hyperparameters (no-us, SVM) : ' + str(get_optimal_hyperparameters('no-us', 'SVM')))
+    print('Optimal hyperparameters (no-us, RF) : ' + str(get_optimal_hyperparameters('no-us', 'RF')))
+    print('Optimal hyperparameters (no-us, GNB) : ' + str(get_optimal_hyperparameters('no-us', 'GNB')))
+    print('Optimal hyperparameters (no-us, MLP) : ' + str(get_optimal_hyperparameters('no-us', 'MLP')))
+    print('Optimal hyperparameters (us, SVM) : ' + str(get_optimal_hyperparameters('us', 'SVM')))
+    print('Optimal hyperparameters (us, RF) : ' + str(get_optimal_hyperparameters('us', 'RF')))
+    print('Optimal hyperparameters (us, GNB) : ' + str(get_optimal_hyperparameters('us', 'GNB')))
+    print('Optimal hyperparameters (us, MLP) : ' + str(get_optimal_hyperparameters('us', 'MLP')))
+
+check()

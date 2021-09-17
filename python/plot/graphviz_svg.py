@@ -33,7 +33,7 @@ def convert_dot_to_svg(version=None) :
     if version is None :
         version = get_version()
     #print(version)
-    for i in range(mlc.get_n_US_folds('PFT')) :
+    for i in range(mlc.get_n_US_folds()) :
         for j in range(n_graphs) :
             input_filename = path_prefix + version + 'dot/' + str(i) + '/' + str(j) + '.dot'
             op_format, engine = 'svg', 'dot'
@@ -45,7 +45,7 @@ def convert_dot_to_svg(version=None) :
 def load_and_verify(version=None) :
     if version is None :
         version = get_version()
-    for i in range(mlc.get_n_US_folds('PFT')) :
+    for i in range(mlc.get_n_US_folds()) :
         for j in range(n_graphs) :
             dot_filename = path_prefix + version + 'dot/' + str(i) + '/' + str(j) + '.dot'
             computed_svg = pipe('dot', 'svg', read_DOT(dot_filename))

@@ -51,7 +51,7 @@ def save() :
 
 def load_graphs() :
     graphs = []
-    for i in range(mlc.get_n_US_folds('PFT')) :
+    for i in range(mlc.get_n_US_folds()) :
         g = []
         prefix = path_prefix + get_version() + 'dot/' + str(i) + '/'
         for j in range(n_graphs) :
