@@ -12,6 +12,7 @@ class ModelMetadata :
         self.SVM_params = model.SVM_params
         self.RF_params = model.RF_params
         self.GNB_params = model.GNB_params
+        self.MLP_params = model.MLP_params
         self.threshold = threshold
 
     def get_model(self) :
@@ -21,5 +22,6 @@ class ModelMetadata :
         model.SVM_params = copy.deepcopy(self.SVM_params)
         model.RF_params = copy.deepcopy(self.RF_params)
         model.GNB_params = copy.deepcopy(self.GNB_params)
+        model.MLP_params = copy.deepcopy(self.MLP_params)
         model.optimal_threshold = self.threshold
         return model
