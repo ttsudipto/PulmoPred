@@ -107,4 +107,4 @@ def check() :
     print('Optimal hyperparameters (us, GNB) : ' + str(get_optimal_hyperparameters('us', 'GNB')))
     print('Optimal hyperparameters (us, MLP) : ' + str(get_optimal_hyperparameters('us', 'MLP')))
 
-check()
+#check()
