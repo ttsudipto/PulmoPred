@@ -13,25 +13,50 @@ bName = 'PFT_O_NO_common.csv'
 #modelId = 'SVM'
 #diagnosis = 'DPLD'
 
-pft_svm_hyperparameters = mlc.get_optimal_hyperparameters('PFT', mlc.get_SVM_id())
-pft_rf_hyperparameters = mlc.get_optimal_hyperparameters('PFT', mlc.get_RandomForest_id())
-pft_nb_hyperparameters = mlc.get_optimal_hyperparameters('PFT', mlc.get_NaiveBayes_id())
-tct_svm_hyperparameters = mlc.get_optimal_hyperparameters('TCT', mlc.get_SVM_id())
-tct_rf_hyperparameters = mlc.get_optimal_hyperparameters('TCT', mlc.get_RandomForest_id())
-tct_nb_hyperparameters = mlc.get_optimal_hyperparameters('TCT', mlc.get_NaiveBayes_id())
+us_svm_hyperparameters = mlc.get_optimal_hyperparameters('us', mlc.get_SVM_id())
+us_rf_hyperparameters = mlc.get_optimal_hyperparameters('us', mlc.get_RandomForest_id())
+us_nb_hyperparameters = mlc.get_optimal_hyperparameters('us', mlc.get_NaiveBayes_id())
+us_mlp_hyperparameters = mlc.get_optimal_hyperparameters('us', mlc.get_MLP_id())
+no_us_svm_hyperparameters = mlc.get_optimal_hyperparameters('no-us', mlc.get_SVM_id())
+no_us_rf_hyperparameters = mlc.get_optimal_hyperparameters('no-us', mlc.get_RandomForest_id())
+no_us_nb_hyperparameters = mlc.get_optimal_hyperparameters('no-us', mlc.get_NaiveBayes_id())
+no_us_mlp_hyperparameters = mlc.get_optimal_hyperparameters('no-us', mlc.get_MLP_id())
 
-pft_SVM_params = {
-    'C' : pft_svm_hyperparameters['C'],
-    'gamma' : pft_svm_hyperparameters['gamma']
+us_SVM_params = {
+    'C' : us_svm_hyperparameters['C'],
+    'gamma' : us_svm_hyperparameters['gamma']
     }
-pft_SVM_thresholds = pft_svm_hyperparameters['thresholds']
-pft_RF_params = {
-    'n_estimators' : pft_rf_hyperparameters['n_estimators'],
-    'max_depth' : pft_rf_hyperparameters['max_depth'],
-    'max_features' : pft_rf_hyperparameters['max_features']
+us_SVM_thresholds = us_svm_hyperparameters['thresholds']
+no_us_SVM_params = {
+    'C' : no_us_svm_hyperparameters['C'],
+    'gamma' : no_us_svm_hyperparameters['gamma']
     }
-pft_GNB_params = {
-    'var_smoothing' : pft_nb_hyperparameters['smoothing']
+no_us_SVM_threshold = no_us_svm_hyperparameters['thresholds'][0]
+us_RF_params = {
+    'n_estimators' : us_rf_hyperparameters['n_estimators'],
+    'max_depth' : us_rf_hyperparameters['max_depth'],
+    'max_features' : us_rf_hyperparameters['max_features']
+    }
+no_us_RF_params = {
+    'n_estimators' : no_us_rf_hyperparameters['n_estimators'],
+    'max_depth' : no_us_rf_hyperparameters['max_depth'],
+    'max_features' : no_us_rf_hyperparameters['max_features']
+    }
+us_GNB_params = {
+    'var_smoothing' : us_nb_hyperparameters['smoothing']
+    }
+no_us_GNB_params = {
+    'var_smoothing' : no_us_nb_hyperparameters['smoothing']
+    }
+us_MLP_params = {
+    'activation' : us_mlp_hyperparameters['activation'],
+    'hidden_layer_sizes' : us_mlp_hyperparameters['hidden_layer_sizes'],
+    'learning_rate_init' : us_mlp_hyperparameters['learning_rate_init']
+    }
+no_us_MLP_params = {
+    'activation' : no_us_mlp_hyperparameters['activation'],
+    'hidden_layer_sizes' : no_us_mlp_hyperparameters['hidden_layer_sizes'],
+    'learning_rate_init' : no_us_mlp_hyperparameters['learning_rate_init']
     }
 
 def readDiagnoses(filename) :
@@ -97,10 +122,53 @@ class DiagnosisPredictor :
             accuracies.append(self.predictDiagnosis(self.blindDiagnoses, y_pred, diagnosis))
         return mean(accuracies)
 
-def execute(modelId:str, diagnosis:str, checkBlind=False) :
+def execute_no_us(modelId:str, diagnosis:str, checkBlind=False) :
     res = reader.read_data('PFT_O_NO_uncommon.csv', verbose=False)
     b_res = reader.read_data('PFT_O_NO_common.csv', verbose=False)
-    under_sample_folds = get_under_sampling_folds(res.target, 1, mlc.get_n_US_folds('PFT'))
+    diagnoses = readDiagnoses(name)
+    blindDiagnoses = readDiagnoses(bName)
+    
+    if mlc.is_SVM_id(modelId) :
+        m = Model(modelId, res.data, res.target)
+        for p, v in no_us_SVM_params.items() :
+            m.set_estimator_param(p, v)
+    elif mlc.is_RandomForest_id(modelId) :
+        m = Model(modelId, res.data, res.target)
+        for p, v in no_us_RF_params.items() :
+            m.set_estimator_param(p, v)
+    elif mlc.is_NaiveBayes_id(modelId) :
+        m = Model(modelId, res.data, res.target)
+        for p, v in no_us_GNB_params.items() :
+            m.set_estimator_param(p, v)
+    elif mlc.is_MLP_id(modelId) :
+        m = Model(modelId, res.data, res.target)
+        for p, v in no_us_MLP_params.items() :
+            m.set_estimator_param(p, v)
+        
+    m.learn()
+    dp = DiagnosisPredictor(m, diagnoses, blindDiagnoses)
+    #for x in range(len(under_sample_diagnoses)) :
+        #print('+', under_sample_diagnoses[x], res.target[under_sample_folds[i]][x])
+    #print('+++++++++++++++++++++++++++++++++++++++++++')
+    
+    if checkBlind == False :  ## Cross validation
+        if mlc.is_SVM_id(modelId) :
+            acc = dp.predictDiagnosisKFold(diagnosis, no_us_SVM_threshold)
+        else :
+            acc = dp.predictDiagnosisKFold(diagnosis)
+        #print(str(acc)+'*'+str(dp.countElementsInList(dp.diagnoses, diagnosis))+' = '+str(acc*dp.countElementsInList(dp.diagnoses, diagnosis)))
+    else :  ## Blind
+        if mlc.is_SVM_id(modelId) :
+            acc = dp.predictDiagnosisBlind(b_res.data, b_res.target, diagnosis, no_us_SVM_threshold)
+        else :
+            acc = dp.predictDiagnosisBlind(b_res.data, b_res.target, diagnosis)
+        #print(str(acc)+'*'+str(dp.countElementsInList(dp.blindDiagnoses, diagnosis))+' = '+str(acc*dp.countElementsInList(dp.blindDiagnoses, diagnosis)))
+    print(diagnosis, acc)
+
+def execute_us(modelId:str, diagnosis:str, checkBlind=False) :
+    res = reader.read_data('PFT_O_NO_uncommon.csv', verbose=False)
+    b_res = reader.read_data('PFT_O_NO_common.csv', verbose=False)
+    under_sample_folds = get_under_sampling_folds(res.target, 1, mlc.get_n_US_folds())
     diagnoses = readDiagnoses(name)
     blindDiagnoses = readDiagnoses(bName)
     accuracies = []
@@ -108,15 +176,19 @@ def execute(modelId:str, diagnosis:str, checkBlind=False) :
     for i in range(len(under_sample_folds)) :
         if mlc.is_SVM_id(modelId) :
             m = Model(modelId, res.data[under_sample_folds[i]], res.target[under_sample_folds[i]])
-            for p, v in pft_SVM_params.items() :
+            for p, v in us_SVM_params.items() :
                 m.set_estimator_param(p, v)
         elif mlc.is_RandomForest_id(modelId) :
             m = Model(modelId, res.data[under_sample_folds[i]], res.target[under_sample_folds[i]])
-            for p, v in pft_RF_params.items() :
+            for p, v in us_RF_params.items() :
                 m.set_estimator_param(p, v)
         elif mlc.is_NaiveBayes_id(modelId) :
             m = Model(modelId, res.data[under_sample_folds[i]], res.target[under_sample_folds[i]])
-            for p, v in pft_GNB_params.items() :
+            for p, v in us_GNB_params.items() :
+                m.set_estimator_param(p, v)
+        elif mlc.is_MLP_id(modelId) :
+            m = Model(modelId, res.data[under_sample_folds[i]], res.target[under_sample_folds[i]])
+            for p, v in us_MLP_params.items() :
                 m.set_estimator_param(p, v)
         
         m.learn()
@@ -129,41 +201,90 @@ def execute(modelId:str, diagnosis:str, checkBlind=False) :
         
         if checkBlind == False :  ## Cross validation
             if mlc.is_SVM_id(modelId) :
-                acc = dp.predictDiagnosisKFold(diagnosis, pft_SVM_thresholds[i])
+                acc = dp.predictDiagnosisKFold(diagnosis, us_SVM_thresholds[i])
             else :
                 acc = dp.predictDiagnosisKFold(diagnosis)
             #print(str(acc)+'*'+str(dp.countElementsInList(dp.diagnoses, diagnosis))+' = '+str(acc*dp.countElementsInList(dp.diagnoses, diagnosis)))
         else :  ## Blind
             if mlc.is_SVM_id(modelId) :
-                acc = dp.predictDiagnosisBlind(b_res.data, b_res.target, diagnosis, pft_SVM_thresholds[i])
+                acc = dp.predictDiagnosisBlind(b_res.data, b_res.target, diagnosis, us_SVM_thresholds[i])
             else :
                 acc = dp.predictDiagnosisBlind(b_res.data, b_res.target, diagnosis)
             #print(str(acc)+'*'+str(dp.countElementsInList(dp.blindDiagnoses, diagnosis))+' = '+str(acc*dp.countElementsInList(dp.blindDiagnoses, diagnosis)))
         accuracies.append(acc)
-    print(accuracies)
+    #print(accuracies)
     print(diagnosis, mean(accuracies), stdev(accuracies))
 
-#print('--------SVM---------')
-#execute('SVM', 'A')
-#execute('SVM', 'C')
-#execute('SVM', 'DPLD')
-#print('--------RF---------')
-#execute('RF', 'A')
-#execute('RF', 'C')
-#execute('RF', 'DPLD')
-#print('--------GNB---------')
-#execute('GNB', 'A')
-#execute('GNB', 'C')
-#execute('GNB', 'DPLD')
-#print('--------SVM Blind---------')
-#execute('SVM', 'A', checkBlind=True)
-#execute('SVM', 'C', checkBlind=True)
-#execute('SVM', 'DPLD', checkBlind=True)
-#print('--------RF Blind---------')
-#execute('RF', 'A', checkBlind=True)
-#execute('RF', 'C', checkBlind=True)
-#execute('RF', 'DPLD', checkBlind=True)
-#print('--------GNB Blind---------')
-#execute('GNB', 'A', checkBlind=True)
-#execute('GNB', 'C', checkBlind=True)
-#execute('GNB', 'DPLD', checkBlind=True)
+print('######################')
+print('#         US         #')
+print('######################')
+
+print('--------SVM---------')
+execute_us('SVM', 'A')
+execute_us('SVM', 'C')
+execute_us('SVM', 'DPLD')
+print('--------RF---------')
+execute_us('RF', 'A')
+execute_us('RF', 'C')
+execute_us('RF', 'DPLD')
+print('--------GNB---------')
+execute_us('GNB', 'A')
+execute_us('GNB', 'C')
+execute_us('GNB', 'DPLD')
+print('--------MLP---------')
+execute_us('MLP', 'A')
+execute_us('MLP', 'C')
+execute_us('MLP', 'DPLD')
+print('--------SVM Blind---------')
+execute_us('SVM', 'A', checkBlind=True)
+execute_us('SVM', 'C', checkBlind=True)
+execute_us('SVM', 'DPLD', checkBlind=True)
+print('--------RF Blind---------')
+execute_us('RF', 'A', checkBlind=True)
+execute_us('RF', 'C', checkBlind=True)
+execute_us('RF', 'DPLD', checkBlind=True)
+print('--------GNB Blind---------')
+execute_us('GNB', 'A', checkBlind=True)
+execute_us('GNB', 'C', checkBlind=True)
+execute_us('GNB', 'DPLD', checkBlind=True)
+print('--------MLP Blind---------')
+execute_us('MLP', 'A', checkBlind=True)
+execute_us('MLP', 'C', checkBlind=True)
+execute_us('MLP', 'DPLD', checkBlind=True)
+
+print('#####################')
+print('#       No-US       #')
+print('#####################')
+
+print('--------SVM---------')
+execute_no_us('SVM', 'A')
+execute_no_us('SVM', 'C')
+execute_no_us('SVM', 'DPLD')
+print('--------RF---------')
+execute_no_us('RF', 'A')
+execute_no_us('RF', 'C')
+execute_no_us('RF', 'DPLD')
+print('--------GNB---------')
+execute_no_us('GNB', 'A')
+execute_no_us('GNB', 'C')
+execute_no_us('GNB', 'DPLD')
+print('--------MLP---------')
+execute_no_us('MLP', 'A')
+execute_no_us('MLP', 'C')
+execute_no_us('MLP', 'DPLD')
+print('--------SVM Blind---------')
+execute_no_us('SVM', 'A', checkBlind=True)
+execute_no_us('SVM', 'C', checkBlind=True)
+execute_no_us('SVM', 'DPLD', checkBlind=True)
+print('--------RF Blind---------')
+execute_no_us('RF', 'A', checkBlind=True)
+execute_no_us('RF', 'C', checkBlind=True)
+execute_no_us('RF', 'DPLD', checkBlind=True)
+print('--------GNB Blind---------')
+execute_no_us('GNB', 'A', checkBlind=True)
+execute_no_us('GNB', 'C', checkBlind=True)
+execute_no_us('GNB', 'DPLD', checkBlind=True)
+print('--------MLP Blind---------')
+execute_no_us('MLP', 'A', checkBlind=True)
+execute_no_us('MLP', 'C', checkBlind=True)
+execute_no_us('MLP', 'DPLD', checkBlind=True)
