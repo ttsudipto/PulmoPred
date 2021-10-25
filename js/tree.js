@@ -7,8 +7,7 @@ function getTree(model, paths, version) {
         if (this.readyState == 4 && this.status == 200) {
             var msg = version + " - " + model + " - " + treeIndex + " - [" + paths[model][treeIndex] + "]";
             document.getElementById('tree_container').innerHTML = this.responseText;// + "<p>" + msg + "</p>";
-            document.getElementById('tree_container').style.borderTop = "1px solid black";
-            document.getElementById('tree_container').style.borderBottom = "1px solid black";
+            document.getElementById('tree_container').style.backgroundColor = "#ffe6cc";
         }
     };
     xhttp.open("POST", "tree.php", true);

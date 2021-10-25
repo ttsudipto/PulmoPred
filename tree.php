@@ -8,7 +8,7 @@
     function modifyDimensions(&$svg) {
         $svg['width'] = "100%";
         $svg['height'] = "100%";
-        $svg->g->polygon['fill'] = "#fff5e6";
+        $svg->g->polygon['fill'] = "#ffe6cc";
     }
     
     function plotPath(&$svg, $path) {
@@ -36,12 +36,12 @@
     modifyDimensions($svg);
     plotPath($svg, $path);
     
-    echo "<center><h3>Classifier: " . $model . " - Decision Tree: " . $tree . "</h3>";
+    echo "<div style=\"background-color:#155151; color:white;border:2px solid #051515;\"><center><h3>Classifier: " . $model . " - Decision tree: " . $tree . "</h3></div>";
 //     echo "<<h5>Path : [ ";
 //     for($i=0; $i<count($path); ++$i) {
 //         echo $path[$i] . "&nbsp";
 //     }
 //     echo "]</h5></center>";
-    echo $svg->asXML();
+    echo "<div style=\"overflow:auto; border:solid #051515; border-width:0 2px 2px 2px;\">".$svg->asXML()."</div>";
     
 ?>

@@ -1,8 +1,23 @@
+body{
+    font-family : sans-serif, "Times New Roman";
+}
+.header_left{
+    width:25%;
+    background-color:#155151;
+    border:4px solid #155151;
+    color:white;
+}
+.header_right{
+    width:75%;
+/*     background-color:#c2d6d6; */
+    border:4px solid #155151;
+}
 .section_menu{
     width : 100%;
-    background-color : #e6ffcc;
+    background-color : #ffe6cc;/*#e6ffcc;*/
     border-style : solid;
     border-width : 2px 0px 2px 0px;
+    margin-top : 2px;
 }
 .section_left{
     padding : 20px 0px 0px 0px;
@@ -10,8 +25,8 @@
     float : left;
 }
 .section_middle{
-    width : 85%;
-    float : right;
+    width : 100%;
+/*     float : right; */
     padding-top : 10px;
     /*                 background-color : lightyellow */
 }
@@ -25,37 +40,37 @@ a.side_nav{
     padding : 5px;
     text-decoration : none;
     color : black;
+    font-weight : bold;
+    border : 2px solid #155151;
 }
 a.side_nav:hover{
     background-color : #dddddd;
 }
 a.active {
-    background-color: #4CAF50;
+    background-color: #155151;/*#4CAF50;*/
     color: white;
+    font-weight : bold;
     display : block;
     padding : 5px;
     text-decoration : none;
     padding : 5px;
-    border-style : solid;
-    border-color : #ff4d4d;
-    border-width : 0px 4px 0px 4px;
+    border : 3px solid #155151;
 }
 table.form{
     border-collapse : collapse;
-    border-width : 0px;
     width : 80%;
     margin-left : 10%;
     margin-right : 10%;
 }
 table.form tr:nth-child(odd){
-    background-color : #ccd9ff;
+    background-color : #ffe6cc;
 }
 table.form tr:nth-child(even){
-    background-color : #b3c6ff;
+    background-color : #ffce99;
 }
-table.view{
+/*table.view{
     border-collapse : collapse;
-    border-width : 0px;
+    border : 1px solid white;
     align : center;
 }
 table.view tr:nth-child(odd){
@@ -63,24 +78,44 @@ table.view tr:nth-child(odd){
 }
 table.view tr:nth-child(even){
     background-color : #b3c6ff;
-}
+}*/
 th{
-    background-color : #000066;
+    background-color : #155151;
     color : #ffffff;
     padding : 5px;
+    border : 2px solid #051515;
+}
+table.form td{
+    border : 2px solid #051515;
+}
+.expression{
+    font-family:monospace;
+    font-size:1.2em;
 }
 input.full, select.full{
-    width : 91%;
+    width : 90%;
     margin-top : 5px;
     margin-bottom : 5px;
-    padding-left : 5px;
+    margin-left : 5%;
+    margin-right : 5%;
+/*     padding-left : 5px; */
 }
-input.drug, select.drug{
-    width : 98%;
-    margin-left : 1%;
-    margin-top : 5px;
-    margin-bottom : 5px;
-    padding : 1px 5px 1px 5px;
+.plot_div{
+    width: 100%;
+    height: 300px;
+    border : 2px solid #155151;
+    overflow : hidden;
+}
+.plot_caption{
+    width: 100%;
+    text-align: center;
+    background-color: #155151;
+    color : white;
+    font-weight: bold;
+    border-style : solid;
+    border-color : #155151;
+    border-width : 0px 2px 2px 2px;
+    padding : 5px 0 5px 0;
 }
 @media print{
     .section_left, button.noprint {
