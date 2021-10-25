@@ -1,5 +1,6 @@
 from json import JSONEncoder
 
+
 class Output :
     def __init__(self, classifier):
         self.classifier = classifier
@@ -13,6 +14,10 @@ class Output :
         self.thresholds = []
         self.positivenesses = []
         self.negativenesses = []
+        
+        self.coeffs = []
+        self.biases = []
+
 
 class OutputEncoder(JSONEncoder) :
     def default(self, obj):
@@ -27,5 +32,7 @@ class OutputEncoder(JSONEncoder) :
             out_dict['thresholds'] = obj.thresholds
             out_dict['positivenesses'] = obj.positivenesses
             out_dict['negativenesses'] = obj.negativenesses
+            out_dict['coeffs'] = obj.coeffs
+            out_dict['biases'] = obj.biases
             return out_dict
         return JSONEncoder.default(self, obj)

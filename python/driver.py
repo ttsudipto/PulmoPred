@@ -21,7 +21,7 @@ def parse_json(j_string) :
     params = inp.get_all_params()
     for p in params :
         inp.add_value(convert_to_float(json_dict[p]))
-    inp.set_estimator_id(json_dict['model_id'])
+    #inp.set_estimator_id(json_dict['model_id'])
     return inp
 
 def get_decision_tree_paths(model, input_vector) :
@@ -83,6 +83,19 @@ def classify_with_GNB(inp_vector) :
         m_id = m_id + 1
     print(json.dumps(output, cls=OutputEncoder))
 
+def classify_with_MLP(inp_vector) :
+    models = load_saved_models('MLP')
+    output = Output('MLP')
+    m_id = 0
+    for m in models :
+        probas = m.get_decision_score(m.total_estimator, inp_vector)
+        predicted_label = int(m.predict(m.total_estimator, inp_vector)[0])
+        output.probas.append(str(probas[0][predicted_label]))
+        output.labels.append(str(predicted_label))
+        m_id = m_id + 1
+    print(json.dumps(output, cls=OutputEncoder))
+
+
 inp = parse_json(sys.argv[1])
 #for i in range(inp.param_length) :
     #print(inp.get_param(i) + ' = ' + str(inp.get_value(i)))
@@ -93,5 +106,7 @@ elif inp.get_estimator_id() == 'RF' :
     classify_with_RF(inp.get_ndarray())
 elif inp.get_estimator_id() == 'GNB' :
     classify_with_GNB(inp.get_ndarray())
+elif inp.get_estimator_id() == 'MLP' :
+    classify_with_MLP(inp.get_ndarray())
 else :
     raise ValueError('Invalid classification model')
