@@ -157,7 +157,12 @@
                 }
             ?>
             <br/><hr/>
-            <p>&nbsp;</p>
+            <p style="font-size:0.8em;text-align:center;">
+                Bhattacharjee S. <i>et al.</i>, <i>J Comput Sci</i> (2022), 63:101768. <i>doi:</i> 
+                <a href="https://doi.org/10.1016/j.jocs.2022.101768" target="_blank">10.1016/j.jocs.2022.101768</a>.
+                Please contact Dr. Sudipto Saha (<a href="mailto:ssaha4@jcbose.ac.in">ssaha4@jcbose.ac.in</a>)
+                regarding any further queries.
+            </p>
             </div>
         </div>
     </body>
