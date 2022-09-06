@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Add Pulmonary Function Report Details</title>
+        <title>Prediction result - PulmoPred</title>
         <link rel = "stylesheet" type = "text/css" href = "css/main.css" />
         <script type = "text/javascript" src = "js/main.js"></script>
 <!--         <script type = "text/javascript" src = "js/plot.js"></script> -->

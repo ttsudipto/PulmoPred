@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Add Pulmonary Function Report Details</title>
+        <title>Datasets - PulmoPred</title>
         <link rel = "stylesheet" type = "text/css" href = "css/main.css" />
     </head>
     <body>
