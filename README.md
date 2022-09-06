@@ -1,17 +1,17 @@
 # PulmoPred
 Classification of obstructive and non-obstructive pulmonary diseases on the basis of spirometry using 
-machine learning (ML)
+machine learning (ML).
 
- Supervised learning classifiers were developed with Support Vector Machine (SVM), Random Forest (RF), 
- Multi-layer Perceptron (MLP), and Naive Bayes (NB) algorithms. The models were trained on spirometry data 
- of patients from Institute of Pulmocare and Research (IPCR), Kolkata, India. The MLP model showed optimal
- performance and is used in the web application.
+Supervised learning classifiers were developed with *Support Vector Machine (SVM)*, *Random Forest (RF)*, 
+*Multi-layer Perceptron (MLP)*, and *Naive Bayes (NB)* algorithms. The models were trained on spirometry 
+data of patients from Institute of Pulmocare and Research (IPCR), Kolkata, India. The MLP model showed 
+optimal performance and is used in the web application.
  
  **Cite as:** 
 
 >Bhattacharjee, S., Saha, B., Bhattacharyya, P., & Saha, S. (2022). Classification of obstructive and 
 non-obstructive pulmonary diseases on the basis of spirometry using machine learning techniques. *Journal 
-of Computational Science*, 63, 101768.
+of Computational Science*, 63, 101768.<br/>
 [https://doi.org/10.1016/j.jocs.2022.101768](https://doi.org/10.1016/j.jocs.2022.101768).
 
 ## Using the tool
@@ -20,8 +20,8 @@ PulmoPred is available at: http://dibresources.jcbose.ac.in/ssaha4/pulmopred.
 To know more about the spirometry features and the methodology, please refer to the 
 [About](http://dibresources.jcbose.ac.in/ssaha4/pulmopred/about.html) page. Please refer to the 
 [Help](http://dibresources.jcbose.ac.in/ssaha4/pulmopred/help.html) page for understanding the 
-inputs and outputs. The dataset used for training and testing the models is available 
-[here](http://dibresources.jcbose.ac.in/ssaha4/pulmopred/datasets.php?type=train).
+inputs and outputs to the web application. The dataset used for training and testing the models is 
+available [here](http://dibresources.jcbose.ac.in/ssaha4/pulmopred/datasets.php?type=train).
 
 ## Development
 Python libraries used for developing the ML models :
